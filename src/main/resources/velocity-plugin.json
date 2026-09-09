@@ -1,0 +1,10 @@
+{
+  "id": "proxyguard",
+  "name": "ProxyGuard",
+  "version": "${version}",
+  "main": "net.k1llm3sixy.proxyGuard.ProxyGuard",
+  "authors": [
+    "n3vvx",
+    "k1llm3sixy"
+  ]
+}
