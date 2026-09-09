@@ -1,0 +1,10 @@
+file-version: 1
+
+# Available providers:
+# IP_API - https://ip-api.com/
+# VPN_API - https://vpnapi.io/
+# PROXY_CHECK - https://proxycheck.io/
+provider: VPN_API
+
+# Uncomment this if you use VPN_API provider and add api key
+# vpn-api-key:
