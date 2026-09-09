@@ -10,6 +10,11 @@ import org.slf4j.Logger
 
 @Plugin(
     id = "proxyguard",
+    name = "ProxyGuard",
+    version = "0.1.0",
+    // TODO: description
+    description = "Desc",
+    authors = ["n3vvx", "k1llm3sixy"],
     dependencies = [
         Dependency(id = "mckotlin-velocity")
     ]
