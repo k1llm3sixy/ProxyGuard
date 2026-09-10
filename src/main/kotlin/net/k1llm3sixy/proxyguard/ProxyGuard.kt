@@ -9,8 +9,10 @@ import com.velocitypowered.api.plugin.annotation.DataDirectory
 import com.velocitypowered.api.proxy.ProxyServer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import net.k1llm3sixy.proxyguard.io.Config
+import net.k1llm3sixy.proxyguard.command.ProxyGuardCommand
+import net.k1llm3sixy.proxyguard.io.Storage
 import net.k1llm3sixy.proxyguard.listener.PreLoginListener
+import net.k1llm3sixy.proxyguard.services.Database
 import org.slf4j.Logger
 import java.nio.file.Path
 
@@ -34,12 +36,26 @@ class ProxyGuard @Inject constructor(val server: ProxyServer, val logger: Logger
     fun onProxyInitialization(e: ProxyInitializeEvent)
     {
         LOGGER = logger
-        Config.init(dataDir)
         scope = CoroutineScope(Dispatchers.IO)
+        Storage.init(dataDir)
+        Database.init()
+
+        registerCmd()
 
         server.eventManager.register(
             this,
             PreLoginListener()
+        )
+    }
+
+    private fun registerCmd()
+    {
+        val manager = server.commandManager
+        val meta = manager.metaBuilder("proxyguard").aliases("pg").plugin(this).build()
+
+        manager.register(
+            meta,
+            ProxyGuardCommand.create()
         )
     }
 }

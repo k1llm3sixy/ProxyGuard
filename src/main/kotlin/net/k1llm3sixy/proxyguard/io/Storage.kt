@@ -2,6 +2,7 @@ package net.k1llm3sixy.proxyguard.io
 
 import dev.dejvokep.boostedyaml.YamlDocument
 import dev.dejvokep.boostedyaml.dvs.versioning.BasicVersioning
+import dev.dejvokep.boostedyaml.route.Route
 import dev.dejvokep.boostedyaml.settings.dumper.DumperSettings
 import dev.dejvokep.boostedyaml.settings.general.GeneralSettings
 import dev.dejvokep.boostedyaml.settings.loader.LoaderSettings
@@ -11,31 +12,60 @@ import net.k1llm3sixy.proxyguard.ProxyGuard.Companion.LOGGER
 import java.io.File
 import java.nio.file.Path
 
-object Config
+// TODO: сделать сейф коллы для большинства методов
+object Storage
 {
     lateinit var CONFIG: YamlDocument
         private set
+
+    private lateinit var dataFolder: Path
 
     fun init(dataDir: Path)
     {
         try
         {
-            CONFIG = createConfig(dataDir)
+            dataFolder = dataDir
+            CONFIG = createConfig()
             CONFIG.update()
             CONFIG.save()
+
+            createDb()
         } catch (e: Exception)
         {
-            // TODO: ошибка создания конфига
             LOGGER.error(
-                "Не удалось создать конфиг",
+                "Failed to create config: ${e.message}",
                 e
             )
         }
     }
 
-    private fun createConfig(dataDir: Path) = YamlDocument.create(
+    fun setProvider(provider: String)
+    {
+        CONFIG.set(
+            Route.from("provider"),
+            provider
+        )
+        CONFIG.save()
+        CONFIG.reload()
+    }
+
+    fun getDbPath(): String = File(
+        dataFolder.toFile(),
+        "proxyguard.db"
+    ).absolutePath
+
+    private fun createDb()
+    {
+        val file = File(
+            dataFolder.toFile(),
+            "proxyguard.db"
+        )
+        if (!file.exists()) file.createNewFile()
+    }
+
+    private fun createConfig() = YamlDocument.create(
         File(
-            dataDir.toFile(),
+            dataFolder.toFile(),
             "config.yml"
         ),
         ProxyGuard::class.java.getResourceAsStream("/config.yml")!!,

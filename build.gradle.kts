@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
     kotlin("jvm") version "2.4.10"
     id("com.gradleup.shadow") version "9.6.1"
@@ -13,14 +15,20 @@ repositories {
     }
 }
 
+val withoutNatives: Configuration = configurations.create("withoutNatives")
+
 dependencies {
     compileOnly("com.velocitypowered:velocity-api:4.1.2-SNAPSHOT")
     annotationProcessor("com.velocitypowered:velocity-api:4.1.2-SNAPSHOT")
 
-    implementation("dev.dejvokep:boosted-yaml:1.3.6")
-
     compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0")
     compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.11.0")
+
+    implementation("dev.dejvokep:boosted-yaml:1.3.6")
+    implementation("org.xerial:sqlite-jdbc:3.53.4.0")
+
+    withoutNatives("dev.dejvokep:boosted-yaml:1.3.6")
+    withoutNatives(files("sqlite-jdbc-3.53.4.0-without-natives.jar"))
 }
 
 kotlin {
@@ -35,9 +43,31 @@ tasks.shadowJar {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
+val noNatives = tasks.register(
+    "noNatives",
+    ShadowJar::class.java
+) {
+    group = "shadow"
+    description = "shadowJar without sqlite native libraries"
+
+    from(sourceSets.main.get().output)
+    configurations = listOf(withoutNatives)
+
+    archiveClassifier.set("without-natives")
+
+    dependencies {
+        exclude(dependency("org.jetbrains.kotlin:.*"))
+        exclude(dependency("org.jetbrains.kotlinx:.*"))
+    }
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
 tasks {
     build {
-        dependsOn(shadowJar)
+        dependsOn(
+            shadowJar,
+            noNatives
+        )
     }
 
     runServer {
@@ -67,6 +97,10 @@ tasks {
             modrinth(
                 "mckotlin",
                 "jCtTVrP9"
+            )
+            modrinth(
+                "luckperms",
+                "tamnmXad"
             )
         }
     }

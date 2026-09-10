@@ -4,7 +4,33 @@ file-version: 1
 # IP_API - https://ip-api.com/
 # VPN_API - https://vpnapi.io/
 # PROXY_CHECK - https://proxycheck.io/
-provider: VPN_API
+provider: IP_API
 
-# Uncomment this if you use VPN_API provider and add api key
-# vpn-api-key:
+# Uncomment and set your API key if using VPN_API provider
+#vpn-api-key:
+
+# Uncomment and set your API key if using PROXY_CHECK provider
+#proxycheck-api-key:
+
+# Plugin messages
+# Sent when config is reloaded (/proxyguard reload)
+msg-config-reload: "<green>ProxyGuard config successfully reloaded"
+
+# Sent when the user database is empty
+msg-users-empty: "<red>No users!"
+
+# User entry format for the list output
+msg-users: "<dark_gray>• <green><nick> <dark_gray>| <gray>IP: <yellow><ip> <dark_gray>| <gray>UUID: <white><uuid>"
+
+# Sent when unban user
+msg-unban-user: "<green>User <uuid> unbanned"
+
+# Kick message
+kick-message: "VPN|Proxy detected"
+
+# Discord notification settings
+discord:
+  # Enable or disable sending detection logs to Discord
+  enabled: false
+  # Discord webhook URL
+  webhook: "https://discord.com/api/webhooks/..."
