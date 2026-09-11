@@ -8,11 +8,11 @@ import dev.dejvokep.boostedyaml.settings.general.GeneralSettings
 import dev.dejvokep.boostedyaml.settings.loader.LoaderSettings
 import dev.dejvokep.boostedyaml.settings.updater.UpdaterSettings
 import net.k1llm3sixy.proxyguard.ProxyGuard
-import net.k1llm3sixy.proxyguard.ProxyGuard.Companion.LOGGER
+import net.k1llm3sixy.proxyguard.error.GuardError
+import net.k1llm3sixy.proxyguard.error.safeCall
 import java.io.File
 import java.nio.file.Path
 
-// TODO: сделать сейф коллы для большинства методов
 object Storage
 {
     lateinit var CONFIG: YamlDocument
@@ -20,23 +20,19 @@ object Storage
 
     private lateinit var dataFolder: Path
 
+    private val dsRoute = Route.from("discord")
+
     fun init(dataDir: Path)
     {
-        try
-        {
+        safeCall(GuardError.CONFIG_INIT) {
+
             dataFolder = dataDir
             CONFIG = createConfig()
             CONFIG.update()
             CONFIG.save()
 
             createDb()
-        } catch (e: Exception)
-        {
-            LOGGER.error(
-                "Failed to create config: ${e.message}",
-                e
-            )
-        }
+        }.getOrThrow()
     }
 
     fun setProvider(provider: String)
@@ -45,14 +41,75 @@ object Storage
             Route.from("provider"),
             provider
         )
+        save()
+    }
+
+    fun enableDs()
+    {
+        CONFIG.set(
+            dsRoute.add("enabled"),
+            true
+        )
+        save()
+    }
+
+    fun disableDs()
+    {
+        CONFIG.set(
+            dsRoute.add("enabled"),
+            false
+        )
+        save()
+    }
+
+    fun setDsWebhook(url: String)
+    {
+        CONFIG.set(
+            dsRoute.add("webhook"),
+            url
+        )
+        save()
+    }
+
+    fun setEmbedTitle(text: String)
+    {
+        CONFIG.set(
+            dsRoute.add("embed-title"),
+            text
+        )
+        save()
+    }
+
+    fun setEmbedDescription(text: String)
+    {
+        CONFIG.set(
+            dsRoute.add("embed-description"),
+            text
+        )
+        save()
+    }
+
+    fun setEmbedReason(text: String)
+    {
+        CONFIG.set(
+            dsRoute.add("embed-reason"),
+            text
+        )
+        save()
+    }
+
+    fun getDbPath(): String = safeCall(GuardError.DB_GET) {
+        File(
+            dataFolder.toFile(),
+            "proxyguard.db"
+        ).absolutePath
+    }.getOrThrow()
+
+    private fun save()
+    {
         CONFIG.save()
         CONFIG.reload()
     }
-
-    fun getDbPath(): String = File(
-        dataFolder.toFile(),
-        "proxyguard.db"
-    ).absolutePath
 
     private fun createDb()
     {

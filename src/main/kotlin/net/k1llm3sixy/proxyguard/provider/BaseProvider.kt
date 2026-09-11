@@ -1,5 +1,6 @@
 package net.k1llm3sixy.proxyguard.provider
 
+import com.google.gson.Gson
 import dev.dejvokep.boostedyaml.route.Route
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.withTimeoutOrNull
@@ -11,8 +12,6 @@ import java.net.http.HttpResponse
 import java.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
-// TODO: СДЕЛАТЬ ОБРАБОТКУ ОШИБОК, ФОЛЛБЕКИ И ПРОЧЕЕ!!
-// TODO: отправка алертов через вебхук в дс
 abstract class BaseProvider
 {
     companion object
@@ -27,6 +26,8 @@ abstract class BaseProvider
             Provider.PROXY_CHECK -> ProxyCheckProvider()
         }
     }
+
+    protected val gson = Gson()
 
     protected val client: HttpClient = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build()
 

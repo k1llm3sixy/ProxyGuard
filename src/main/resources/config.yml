@@ -22,15 +22,39 @@ msg-users-empty: "<red>No users!"
 # User entry format for the list output
 msg-users: "<dark_gray>• <green><nick> <dark_gray>| <gray>IP: <yellow><ip> <dark_gray>| <gray>UUID: <white><uuid>"
 
-# Sent when unban user
-msg-unban-user: "<green>User <uuid> unbanned"
+# Sent when a user is unbanned (/proxyguard unban <uuid>)
+msg-unban-user: "<green>User <white><uuid> <green>unbanned"
 
 # Kick message
 kick-message: "VPN|Proxy detected"
 
-# Discord notification settings
+# Sent when changing the active provider via command (/proxyguard settings provider <name>)
+msg-set-provider: "<green>Provider set to: <white><provider>"
+
+# Sent when toggling DiscordService notifications on (/proxyguard settings discord enable)
+msg-ds-enable: "<green>DiscordService alerts enabled"
+
+# Sent when toggling DiscordService notifications off (/proxyguard settings discord disable)
+msg-ds-disable: "<red>DiscordService alerts disabled"
+
+# Sent when updating DiscordService embed title (/proxyguard settings discord embed title <text>)
+msg-ds-embed-title: "<green>DiscordService embed title set to: <white><title>"
+
+# Sent when updating DiscordService embed description (/proxyguard settings discord embed description <text>)
+msg-ds-embed-description: "<green>DiscordService embed description set to: <white><description>"
+
+# Sent when updating DiscordService embed reason (/proxyguard settings discord embed reason <text>)
+msg-ds-embed-reason: "<green>DiscordService embed reason set to: <white><reason>"
+
+# DiscordService notification settings
 discord:
-  # Enable or disable sending detection logs to Discord
+  # Enable or disable sending detection logs to Discord webhook
   enabled: false
-  # Discord webhook URL
+  # DiscordService webhook URL
   webhook: "https://discord.com/api/webhooks/..."
+  # Title displayed at the top of the Discord embed message
+  embed-title: "Player blocked"
+  # Explanation of the event shown in the embed body
+  embed-description: "A player was blocked while attempting to join the server with an active proxy or VPN"
+  # Field specifying the detailed reason for the block
+  embed-reason: "VPN|Proxy detected"

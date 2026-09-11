@@ -1,6 +1,7 @@
 package net.k1llm3sixy.proxyguard.services
 
-import net.k1llm3sixy.proxyguard.ProxyGuard.Companion.LOGGER
+import net.k1llm3sixy.proxyguard.error.GuardError
+import net.k1llm3sixy.proxyguard.error.safeCall
 import net.k1llm3sixy.proxyguard.io.Storage
 import java.sql.Connection
 import java.sql.DriverManager
@@ -20,26 +21,18 @@ data class UserRecord(
     val ip: String,
 )
 
-object Database
+object DbService
 {
     private var conn: Connection? = null
 
     fun init()
     {
         val db = Storage.getDbPath()
-        Class.forName("org.sqlite.JDBC")
 
-        conn = try
-        {
+        conn = safeCall(GuardError.DB_INIT) {
+            Class.forName("org.sqlite.JDBC")
             DriverManager.getConnection("jdbc:sqlite:$db")
-        } catch (e: Exception)
-        {
-            LOGGER.error(
-                "Failed to connect to database: ${e.message}",
-                e
-            )
-            null
-        }
+        }.getOrThrow()
 
         runMigrations()
     }
@@ -67,7 +60,10 @@ object Database
     fun removeUser(uuid: String): Boolean
     {
         conn?.prepareStatement(Statement.DELETE_USER.sql)?.use {
-            it.setString(1, uuid)
+            it.setString(
+                1,
+                uuid
+            )
 
             val affected = it.executeUpdate()
 

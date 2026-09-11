@@ -1,0 +1,39 @@
+package net.k1llm3sixy.proxyguard.error
+
+import net.k1llm3sixy.proxyguard.ProxyGuard.Companion.LOGGER
+import kotlin.coroutines.cancellation.CancellationException
+
+enum class GuardError(val message: String)
+{
+    CONFIG_INIT("Failed to initialize config"),
+    DB_GET("Failed to get database file"),
+    DB_INIT("Failed to initialize and connect database"),
+    DS_SEND_WEBHOOK("Failed to send discord webhook"),
+    LOGIN_EVENT("Error occurred while processing player login")
+}
+
+inline fun <T> safeCall(
+    error: GuardError,
+    block: () -> T,
+): Result<T>
+{
+    return try
+    {
+        Result.success(block())
+    } catch (e: Exception)
+    {
+        if (e is CancellationException) throw e
+
+        LOGGER.error(
+            "${error.message}: ${e.message}",
+            e
+        )
+
+        Result.failure(
+            Exception(
+                error.message,
+                e
+            )
+        )
+    }
+}

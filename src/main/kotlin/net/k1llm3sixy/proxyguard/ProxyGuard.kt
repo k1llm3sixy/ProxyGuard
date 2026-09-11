@@ -12,7 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import net.k1llm3sixy.proxyguard.command.ProxyGuardCommand
 import net.k1llm3sixy.proxyguard.io.Storage
 import net.k1llm3sixy.proxyguard.listener.PreLoginListener
-import net.k1llm3sixy.proxyguard.services.Database
+import net.k1llm3sixy.proxyguard.services.DbService
 import org.slf4j.Logger
 import java.nio.file.Path
 
@@ -38,7 +38,7 @@ class ProxyGuard @Inject constructor(val server: ProxyServer, val logger: Logger
         LOGGER = logger
         scope = CoroutineScope(Dispatchers.IO)
         Storage.init(dataDir)
-        Database.init()
+        DbService.init()
 
         registerCmd()
 

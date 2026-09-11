@@ -1,12 +1,21 @@
 package net.k1llm3sixy.proxyguard.provider
 
-import com.google.gson.JsonParser
 import dev.dejvokep.boostedyaml.route.Route
 import net.k1llm3sixy.proxyguard.io.Storage.CONFIG
 import java.net.URI
 
 class ProxyCheckProvider : BaseProvider()
 {
+    private data class Response(
+        val detections: Detections,
+    )
+
+    private data class Detections(
+        val vpn: Boolean,
+        val proxy: Boolean,
+        val hosting: Boolean,
+    )
+
     override val provider = Provider.PROXY_CHECK
     override suspend fun proxy(ip: String): Boolean
     {
@@ -17,14 +26,12 @@ class ProxyCheckProvider : BaseProvider()
         )
 
         return getResult(URI.create(uri)) {
-            val json = JsonParser.parseString(it.body()).asJsonObject
-            val security = json.get("detections").asJsonObject ?: return@getResult false
+            val data = gson.fromJson(
+                it.body(),
+                Response::class.java
+            )?.detections ?: return@getResult false
 
-            val vpn = security.get("vpn")?.asBoolean ?: false
-            val proxy = security.get("proxy")?.asBoolean ?: false
-            val hosting = security.get("hosting")?.asBoolean ?: false
-
-            vpn || proxy || hosting
+            data.vpn || data.proxy || data.hosting
         }
     }
 }
