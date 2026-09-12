@@ -29,6 +29,8 @@ dependencies {
 
     withoutNatives("dev.dejvokep:boosted-yaml:1.3.6")
     withoutNatives(files("sqlite-jdbc-3.53.4.0-without-natives.jar"))
+
+    implementation("org.bstats:bstats-velocity:3.2.1")
 }
 
 kotlin {
@@ -41,6 +43,8 @@ tasks.shadowJar {
         exclude(dependency("org.jetbrains.kotlinx:.*"))
     }
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
+
+    relocate("org.bstats", project.group.toString())
 }
 
 val noNatives = tasks.register(

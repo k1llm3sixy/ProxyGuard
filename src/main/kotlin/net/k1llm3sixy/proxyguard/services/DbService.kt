@@ -13,6 +13,9 @@ private enum class Statement(val sql: String)
     SELECT_USER("SELECT EXISTS(SELECT 1 FROM users WHERE uuid = ?)"),
     SELECT_USERS("SELECT uuid, nick, ip FROM users"),
     DELETE_USER("DELETE FROM users WHERE uuid = ?"),
+    INSERT_IP("INSERT INTO ip_whitelist (ip) VALUES (?)"),
+    DELETE_IP("DELETE FROM ip_whitelist WHERE ip = ?"),
+    SELECT_IP("SELECT EXISTS(SELECT 1 FROM ip_whitelist WHERE ip = ?)")
 }
 
 data class UserRecord(
@@ -23,7 +26,7 @@ data class UserRecord(
 
 object DbService
 {
-    private var conn: Connection? = null
+    private lateinit var conn: Connection
 
     fun init()
     {
@@ -34,12 +37,17 @@ object DbService
             DriverManager.getConnection("jdbc:sqlite:$db")
         }.getOrThrow()
 
+        conn.createStatement().use {
+            it.execute("PRAGMA journal_mode = WAL;")
+            it.execute("PRAGMA busy_timeout = 7000;")
+        }
+
         runMigrations()
     }
 
-    fun insertUser(uuid: UUID, nick: String, ip: String)
+    fun addUser(uuid: UUID, nick: String, ip: String)
     {
-        conn?.prepareStatement(Statement.INSERT_USER.sql)?.use {
+        conn.prepareStatement(Statement.INSERT_USER.sql).use {
             it.setString(
                 1,
                 uuid.toString()
@@ -59,7 +67,7 @@ object DbService
 
     fun removeUser(uuid: String): Boolean
     {
-        conn?.prepareStatement(Statement.DELETE_USER.sql)?.use {
+        conn.prepareStatement(Statement.DELETE_USER.sql).use {
             it.setString(
                 1,
                 uuid
@@ -69,13 +77,11 @@ object DbService
 
             return affected > 0
         }
-
-        return false
     }
 
     fun getUser(uuid: UUID): Boolean
     {
-        conn?.prepareStatement(Statement.SELECT_USER.sql)?.use {
+        conn.prepareStatement(Statement.SELECT_USER.sql).use {
             it.setString(
                 1,
                 uuid.toString()
@@ -92,7 +98,7 @@ object DbService
     {
         val users = mutableListOf<UserRecord>()
 
-        conn?.prepareStatement(Statement.SELECT_USERS.sql)?.use {
+        conn.prepareStatement(Statement.SELECT_USERS.sql).use {
             it.executeQuery().use { rs ->
                 while (rs.next())
                 {
@@ -119,18 +125,65 @@ object DbService
         return users
     }
 
+    fun addWhitelist(ip: String)
+    {
+        conn.prepareStatement(Statement.INSERT_IP.sql).use {
+            it.setString(
+                1,
+                ip
+            )
+
+            it.executeUpdate()
+        }
+    }
+
+    fun removeWhitelist(ip: String)
+    {
+        conn.prepareStatement(Statement.DELETE_IP.sql).use {
+            it.setString(
+                1,
+                ip
+            )
+
+            it.executeUpdate()
+        }
+    }
+
+    fun getWhitelist(ip: String): Boolean
+    {
+        conn.prepareStatement(Statement.SELECT_IP.sql).use {
+            it.setString(
+                1,
+                ip
+            )
+            it.executeQuery().use { rs ->
+                if (rs.next()) return rs.getBoolean(1)
+            }
+        }
+
+        return false
+    }
+
     private fun runMigrations()
     {
-        val sql = """
-            CREATE TABLE IF NOT EXISTS users (
+        conn.createStatement().use {
+            it.execute(
+                """
+                    CREATE TABLE IF NOT EXISTS users (
                 uuid TEXT PRIMARY KEY,
                 nick TEXT NOT NULL,
                 ip TEXT NOT NULL
             );
-        """.trimIndent()
+                """.trimIndent()
+            )
 
-        conn?.createStatement()?.use {
-            it.execute(sql)
+            it.execute(
+                """
+                    CREATE TABLE IF NOT EXISTS ip_whitelist (
+                    ip TEXT PRIMARY KEY
+                    );
+                """.trimIndent()
+            )
         }
     }
 }

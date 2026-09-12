@@ -12,14 +12,14 @@ object GuardService
 
     suspend fun block(ip: String, uuid: UUID, nick: String): Boolean
     {
-        if (ip == "127.0.0.1" || ip == "localhost") return false
+        if (ip == "127.0.0.1" || ip == "localhost" || DbService.getWhitelist(ip)) return false
 
         if (DbService.getUser(uuid)) return true
         val proxy = BaseProvider.provider().proxy(ip)
 
         if (proxy)
         {
-            DbService.insertUser(
+            DbService.addUser(
                 uuid,
                 nick,
                 ip

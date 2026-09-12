@@ -13,6 +13,7 @@ import net.k1llm3sixy.proxyguard.command.ProxyGuardCommand
 import net.k1llm3sixy.proxyguard.io.Storage
 import net.k1llm3sixy.proxyguard.listener.PreLoginListener
 import net.k1llm3sixy.proxyguard.services.DbService
+import org.bstats.velocity.Metrics
 import org.slf4j.Logger
 import java.nio.file.Path
 
@@ -24,7 +25,12 @@ import java.nio.file.Path
     authors = ["n3vvx", "k1llm3sixy"],
     dependencies = [Dependency(id = "mckotlin-velocity")]
 )
-class ProxyGuard @Inject constructor(val server: ProxyServer, val logger: Logger, @DataDirectory val dataDir: Path)
+class ProxyGuard @Inject constructor(
+    val server: ProxyServer,
+    val logger: Logger,
+    @DataDirectory val dataDir: Path,
+    val metrics: Metrics.Factory,
+)
 {
     companion object
     {
@@ -35,6 +41,8 @@ class ProxyGuard @Inject constructor(val server: ProxyServer, val logger: Logger
     @Subscribe
     fun onProxyInitialization(e: ProxyInitializeEvent)
     {
+        val id = 33992
+        metrics.make(this, id)
         LOGGER = logger
         scope = CoroutineScope(Dispatchers.IO)
         Storage.init(dataDir)

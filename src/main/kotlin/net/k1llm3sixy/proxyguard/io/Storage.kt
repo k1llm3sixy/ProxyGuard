@@ -44,55 +44,19 @@ object Storage
         save()
     }
 
-    fun enableDs()
+    fun toggleDs(state: Boolean)
     {
         CONFIG.set(
             dsRoute.add("enabled"),
-            true
+            state
         )
         save()
     }
 
-    fun disableDs()
+    fun setDsWebhook(route: String, text: String)
     {
         CONFIG.set(
-            dsRoute.add("enabled"),
-            false
-        )
-        save()
-    }
-
-    fun setDsWebhook(url: String)
-    {
-        CONFIG.set(
-            dsRoute.add("webhook"),
-            url
-        )
-        save()
-    }
-
-    fun setEmbedTitle(text: String)
-    {
-        CONFIG.set(
-            dsRoute.add("embed-title"),
-            text
-        )
-        save()
-    }
-
-    fun setEmbedDescription(text: String)
-    {
-        CONFIG.set(
-            dsRoute.add("embed-description"),
-            text
-        )
-        save()
-    }
-
-    fun setEmbedReason(text: String)
-    {
-        CONFIG.set(
-            dsRoute.add("embed-reason"),
+            dsRoute.add(route),
             text
         )
         save()
