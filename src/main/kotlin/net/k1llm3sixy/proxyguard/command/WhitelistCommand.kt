@@ -8,6 +8,7 @@ import com.velocitypowered.api.command.BrigadierCommand
 import com.velocitypowered.api.command.CommandSource
 import kotlinx.coroutines.launch
 import net.k1llm3sixy.proxyguard.ProxyGuard.Companion.scope
+import net.k1llm3sixy.proxyguard.ext.deserialize
 import net.k1llm3sixy.proxyguard.ext.get
 import net.k1llm3sixy.proxyguard.io.ConfigRoute
 import net.k1llm3sixy.proxyguard.io.Storage.CONFIG
@@ -41,7 +42,7 @@ object WhitelistCommand : BaseCommand()
                     scope.launch {
                         DbService.addWhitelist(ip)
                         val msg = miniMsg.deserialize(
-                            CONFIG.get(ConfigRoute.MSG_WHITELIST_ADD),
+                            ConfigRoute.MSG_WHITELIST_ADD,
                             Placeholder.component(
                                 "ip",
                                 Component.text(ip)
@@ -96,7 +97,7 @@ object WhitelistCommand : BaseCommand()
 
                     whitelisted.forEach {
                         val msg = miniMsg.deserialize(
-                            CONFIG.get(ConfigRoute.MSG_WHITELIST_LIST),
+                            ConfigRoute.MSG_WHITELIST_LIST,
                             Placeholder.component(
                                 "ip",
                                 Component.text(it)

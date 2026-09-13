@@ -6,6 +6,7 @@ import com.mojang.brigadier.arguments.StringArgumentType.greedyString
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.velocitypowered.api.command.BrigadierCommand
 import com.velocitypowered.api.command.CommandSource
+import net.k1llm3sixy.proxyguard.ext.deserialize
 import net.k1llm3sixy.proxyguard.ext.get
 import net.k1llm3sixy.proxyguard.io.ConfigRoute
 import net.k1llm3sixy.proxyguard.io.Storage
@@ -15,6 +16,8 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 
 object DiscordCommand : BaseCommand()
 {
+    val webhookRegex = Regex("""^https://(?:ptb\.|canary\.)?discord\.com/api/webhooks/\d+/[a-zA-Z0-9_-]+$""")
+
     override fun create(): LiteralArgumentBuilder<CommandSource> =
         BrigadierCommand.literalArgumentBuilder("discord")
             .then(
@@ -46,6 +49,13 @@ object DiscordCommand : BaseCommand()
                                 it,
                                 "url"
                             )
+
+                            if (!webhookRegex.matches(url))
+                            {
+                                it.source.sendRichMessage(CONFIG.get(ConfigRoute.MSG_INVALID_WEBHOOK))
+                                return@executes 0
+                            }
+
                             Storage.setDsWebhook(
                                 ConfigRoute.DS_WEBHOOK,
                                 url
@@ -74,7 +84,7 @@ object DiscordCommand : BaseCommand()
                                     )
 
                                     val msg = miniMsg.deserialize(
-                                        CONFIG.get(ConfigRoute.MSG_DS_EMBED_TITLE),
+                                        ConfigRoute.MSG_DS_EMBED_TITLE,
                                         Placeholder.component(
                                             "title",
                                             Component.text(text)
@@ -102,7 +112,7 @@ object DiscordCommand : BaseCommand()
                                     )
 
                                     val msg = miniMsg.deserialize(
-                                        CONFIG.get(ConfigRoute.MSG_DS_EMBED_DESC),
+                                        ConfigRoute.MSG_DS_EMBED_DESC,
                                         Placeholder.component(
                                             "description",
                                             Component.text(text)
@@ -130,7 +140,7 @@ object DiscordCommand : BaseCommand()
                                     )
 
                                     val msg = miniMsg.deserialize(
-                                        CONFIG.get(ConfigRoute.MSG_DS_EMBED_REASON),
+                                        ConfigRoute.MSG_DS_EMBED_REASON,
                                         Placeholder.component(
                                             "reason",
                                             Component.text(text)

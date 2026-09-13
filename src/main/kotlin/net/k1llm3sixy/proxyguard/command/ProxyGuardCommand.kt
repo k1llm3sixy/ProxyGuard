@@ -1,10 +1,12 @@
 package net.k1llm3sixy.proxyguard.command
 
+import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.velocitypowered.api.command.BrigadierCommand
+import com.velocitypowered.api.command.CommandSource
 
-object ProxyGuardCommand
+object ProxyGuardCommand : BaseCommand()
 {
-    fun create(): BrigadierCommand
+    override fun create(): LiteralArgumentBuilder<CommandSource>
     {
         val node =
             BrigadierCommand.literalArgumentBuilder("proxyguard").requires { it.hasPermission("proxyguard.admin") }
@@ -13,8 +15,7 @@ object ProxyGuardCommand
                 .then(UsersCommand.create())
                 .then(UnbanCommand.create())
                 .then(WhitelistCommand.create())
-                .build()
 
-        return BrigadierCommand(node)
+        return node
     }
 }

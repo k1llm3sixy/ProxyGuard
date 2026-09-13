@@ -34,6 +34,7 @@ enum class ConfigRoute(val route: Route)
     MSG_DS_EMBED_REASON(Route.from("msg-ds-embed-reason")),
 
     MSG_INVALID_IP(Route.from("msg-invalid-ip")),
+    MSG_INVALID_WEBHOOK(Route.from("msg-invalid-webhook")),
 
     MSG_WHITELIST_ADD(Route.from("msg-whitelist-add")),
     MSG_WHITELIST_REMOVE(Route.from("msg-whitelist-remove")),

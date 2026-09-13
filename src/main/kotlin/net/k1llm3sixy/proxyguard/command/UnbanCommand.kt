@@ -8,9 +8,8 @@ import com.velocitypowered.api.command.BrigadierCommand
 import com.velocitypowered.api.command.CommandSource
 import kotlinx.coroutines.launch
 import net.k1llm3sixy.proxyguard.ProxyGuard.Companion.scope
-import net.k1llm3sixy.proxyguard.ext.get
+import net.k1llm3sixy.proxyguard.ext.deserialize
 import net.k1llm3sixy.proxyguard.io.ConfigRoute
-import net.k1llm3sixy.proxyguard.io.Storage.CONFIG
 import net.k1llm3sixy.proxyguard.services.DbService
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
@@ -24,12 +23,8 @@ object UnbanCommand : BaseCommand()
                     "uuid",
                     greedyString()
                 ).suggests { _, builder ->
-                    val users = DbService.getUsers()
-
-                    for ((uuid) in users)
-                    {
-                        builder.suggest(uuid.toString())
-                    }
+                    val uuids = DbService.getUsersUuid()
+                    uuids.forEach { builder.suggest(it) }
 
                     builder.buildFuture()
                 }.executes {
@@ -43,7 +38,7 @@ object UnbanCommand : BaseCommand()
                         if (result)
                         {
                             val msg = miniMsg.deserialize(
-                                CONFIG.get(ConfigRoute.MSG_UNBAN_USER),
+                                ConfigRoute.MSG_UNBAN_USER,
                                 Placeholder.component(
                                     "uuid",
                                     Component.text(uuid)

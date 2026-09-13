@@ -19,9 +19,7 @@ object ProviderCommand : BaseCommand()
                 "provider",
                 StringArgumentType.word()
             ).suggests { _, builder ->
-                Provider.entries.forEach {
-                    builder.suggest(it.name)
-                }
+                Provider.entries.forEach { builder.suggest(it.name) }
                 builder.buildFuture()
             }.executes {
                 val provider = StringArgumentType.getString(
@@ -32,6 +30,5 @@ object ProviderCommand : BaseCommand()
                 it.source.sendRichMessage(CONFIG.get(ConfigRoute.MSG_SET_PROVIDER))
 
                 Command.SINGLE_SUCCESS
-            }
-        )
+            })
 }

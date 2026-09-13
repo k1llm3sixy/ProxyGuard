@@ -12,6 +12,7 @@ private enum class Statement(val sql: String)
     ADD_USER("INSERT INTO bad_users (uuid, nick, ip) VALUES (?, ?, ?)"),
     GET_USER("SELECT EXISTS(SELECT 1 FROM bad_users WHERE uuid = ?)"),
     GET_USERS("SELECT uuid, nick, ip FROM bad_users"),
+    GET_USERS_UUID("SELECT uuid FROM bad_users"),
     DELETE_USER("DELETE FROM bad_users WHERE uuid = ?"),
 
     ADD_WHITELIST("INSERT INTO ip_whitelist (ip) VALUES (?)"),
@@ -24,7 +25,7 @@ private enum class Statement(val sql: String)
 }
 
 data class UserRecord(
-    val uuid: UUID,
+    val uuid: String,
     val nick: String,
     val ip: String,
 )
@@ -110,24 +111,34 @@ object DbService
                     val uuid = rs.getString("uuid")
                     val nick = rs.getString("nick")
                     val ip = rs.getString("ip")
-
-                    try
-                    {
-                        val record = UserRecord(
-                            UUID.fromString(uuid),
-                            nick,
-                            ip
-                        )
-                        users.add(record)
-                    } catch (_: Exception)
-                    {
-                        continue
-                    }
+                    val record = UserRecord(
+                        uuid,
+                        nick,
+                        ip
+                    )
+                    users.add(record)
                 }
             }
         }
 
         return users
+    }
+
+    fun getUsersUuid(): List<String>
+    {
+        val uuids = mutableListOf<String>()
+
+        conn.prepareStatement(Statement.GET_USERS_UUID.sql).use {
+            it.executeQuery().use { rs ->
+                while (rs.next())
+                {
+                    val uuid = rs.getString("uuid")
+                    uuids.add(uuid)
+                }
+            }
+        }
+
+        return uuids
     }
 
     fun addWhitelist(ip: String)

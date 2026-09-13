@@ -6,12 +6,13 @@ import com.velocitypowered.api.command.BrigadierCommand
 import com.velocitypowered.api.command.CommandSource
 import kotlinx.coroutines.launch
 import net.k1llm3sixy.proxyguard.ProxyGuard.Companion.scope
+import net.k1llm3sixy.proxyguard.ext.deserialize
 import net.k1llm3sixy.proxyguard.ext.get
+import net.k1llm3sixy.proxyguard.ext.text
 import net.k1llm3sixy.proxyguard.io.ConfigRoute
 import net.k1llm3sixy.proxyguard.io.Storage.CONFIG
 import net.k1llm3sixy.proxyguard.services.DbService
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 
 object UsersCommand : BaseCommand()
 {
@@ -26,22 +27,23 @@ object UsersCommand : BaseCommand()
                     return@launch
                 }
 
-                for ((uuid, nick, ip) in users)
-                {
+                users.forEach { (uuid, nick, ip) ->
                     val msg = miniMsg.deserialize(
-                        CONFIG.get(ConfigRoute.MSG_USERS),
-                        Placeholder.component(
-                            "nick",
-                            Component.text(nick)
-                        ),
-                        Placeholder.component(
-                            "ip",
-                            Component.text(ip)
-                        ),
-                        Placeholder.component(
-                            "uuid",
-                            Component.text(uuid.toString())
-                        )
+                        ConfigRoute.MSG_USERS,
+                        TagResolver.builder()
+                            .text(
+                                "nick",
+                                nick
+                            )
+                            .text(
+                                "ip",
+                                ip
+                            )
+                            .text(
+                                "uuid",
+                                uuid
+                            )
+                            .build()
                     )
 
                     it.source.sendMessage(msg)

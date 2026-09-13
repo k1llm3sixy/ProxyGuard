@@ -46,7 +46,10 @@ msg-ds-embed-description: "<green>Discord embed description set to: <white><desc
 msg-ds-embed-reason: "<green>Discord embed reason set to: <white><reason>"
 
 # Sent when passing an invalid IP to a whitelist command
-msg-invalid-ip: "<red>Invalid IP format! <dark_gray>• <gray>expected IPv4"
+msg-invalid-ip: "<red>Invalid IP format!"
+
+# Sent when passing an invalid url to a discord webhook command
+msg-invalid-webhook: "<red>Invalid Webhook url!"
 
 # Sent when an IP is added to the whitelist (/proxyguard whitelist add <ip>)
 msg-whitelist-add: "<green>IP <white><ip> <green>added to whitelist"

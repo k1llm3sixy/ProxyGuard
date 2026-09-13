@@ -1,6 +1,7 @@
 package net.k1llm3sixy.proxyguard
 
 import com.google.inject.Inject
+import com.velocitypowered.api.command.BrigadierCommand
 import com.velocitypowered.api.event.Subscribe
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent
@@ -73,7 +74,7 @@ class ProxyGuard @Inject constructor(
 
         manager.register(
             meta,
-            ProxyGuardCommand.create()
+            BrigadierCommand(ProxyGuardCommand.create().build())
         )
     }
 }

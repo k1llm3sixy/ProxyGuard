@@ -1,5 +1,3 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-
 plugins {
     kotlin("jvm") version "2.4.10"
     id("com.gradleup.shadow") version "9.6.1"
@@ -15,8 +13,6 @@ repositories {
     }
 }
 
-val withoutNatives: Configuration = configurations.create("withoutNatives")
-
 dependencies {
     compileOnly("com.velocitypowered:velocity-api:4.1.2-SNAPSHOT")
     annotationProcessor("com.velocitypowered:velocity-api:4.1.2-SNAPSHOT")
@@ -26,9 +22,6 @@ dependencies {
 
     implementation("dev.dejvokep:boosted-yaml:1.3.6")
     implementation("org.xerial:sqlite-jdbc:3.53.4.0")
-
-    withoutNatives("dev.dejvokep:boosted-yaml:1.3.6")
-    withoutNatives(files("sqlite-jdbc-3.53.4.0-without-natives.jar"))
 
     implementation("org.bstats:bstats-velocity:3.2.1")
 }
@@ -44,35 +37,14 @@ tasks.shadowJar {
     }
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 
-    relocate("org.bstats", project.group.toString())
-}
-
-val noNatives = tasks.register(
-    "noNatives",
-    ShadowJar::class.java
-) {
-    group = "shadow"
-    description = "shadowJar without sqlite native libraries"
-
-    from(sourceSets.main.get().output)
-    configurations = listOf(withoutNatives)
-
-    archiveClassifier.set("without-natives")
-
-    dependencies {
-        exclude(dependency("org.jetbrains.kotlin:.*"))
-        exclude(dependency("org.jetbrains.kotlinx:.*"))
-    }
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    relocate(
+        "org.bstats",
+        project.group.toString()
+    )
 }
 
 tasks {
-    build {
-        dependsOn(
-            shadowJar,
-            noNatives
-        )
-    }
+    build { dependsOn(shadowJar) }
 
     runServer {
         minecraftVersion("26.2")
