@@ -12,6 +12,7 @@ object ProxyGuardCommand
                 .then(SettingsCommand.create())
                 .then(UsersCommand.create())
                 .then(UnbanCommand.create())
+                .then(WhitelistCommand.create())
                 .build()
 
         return BrigadierCommand(node)

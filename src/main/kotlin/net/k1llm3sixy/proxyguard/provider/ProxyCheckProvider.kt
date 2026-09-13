@@ -13,13 +13,14 @@ class ProxyCheckProvider : BaseProvider()
     private data class Detections(
         val vpn: Boolean,
         val proxy: Boolean,
-        val hosting: Boolean,
     )
 
     override val provider = Provider.PROXY_CHECK
+    override val key: String
+        get() = CONFIG.getString(Route.from("proxycheck-api-key"))
+
     override suspend fun proxy(ip: String): Boolean
     {
-        val key = CONFIG.getString(Route.from("proxycheck-api-key"))
         val uri = provider.url.format(
             ip,
             key
@@ -31,7 +32,7 @@ class ProxyCheckProvider : BaseProvider()
                 Response::class.java
             )?.detections ?: return@getResult false
 
-            data.vpn || data.proxy || data.hosting
+            data.vpn || data.proxy
         }
     }
 }

@@ -16,10 +16,11 @@ class VpnApiProvider : BaseProvider()
     )
 
     override val provider = Provider.VPN_API
+    override val key: String
+        get() = CONFIG.getString(Route.from("vpn-api-key"))
 
     override suspend fun proxy(ip: String): Boolean
     {
-        val key = CONFIG.getString(Route.from("vpn-api-key"))
         val uri = provider.url.format(
             ip,
             key

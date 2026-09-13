@@ -1,10 +1,9 @@
 file-version: 1
 
 # Available providers:
-# IP_API - https://ip-api.com/
 # VPN_API - https://vpnapi.io/
 # PROXY_CHECK - https://proxycheck.io/
-provider: IP_API
+provider: PROXY_CHECK
 
 # Uncomment and set your API key if using VPN_API provider
 #vpn-api-key:
@@ -31,26 +30,41 @@ kick-message: "VPN|Proxy detected"
 # Sent when changing the active provider via command (/proxyguard settings provider <name>)
 msg-set-provider: "<green>Provider set to: <white><provider>"
 
-# Sent when toggling DiscordService notifications on (/proxyguard settings discord enable)
-msg-ds-enable: "<green>DiscordService alerts enabled"
+# Sent when toggling Discord notifications on (/proxyguard settings discord enable)
+msg-ds-enable: "<green>Discord alerts enabled"
 
-# Sent when toggling DiscordService notifications off (/proxyguard settings discord disable)
-msg-ds-disable: "<red>DiscordService alerts disabled"
+# Sent when toggling Discord notifications off (/proxyguard settings discord disable)
+msg-ds-disable: "<red>Discord alerts disabled"
 
-# Sent when updating DiscordService embed title (/proxyguard settings discord embed title <text>)
-msg-ds-embed-title: "<green>DiscordService embed title set to: <white><title>"
+# Sent when updating Discord embed title (/proxyguard settings discord embed title <text>)
+msg-ds-embed-title: "<green>Discord embed title set to: <white><title>"
 
-# Sent when updating DiscordService embed description (/proxyguard settings discord embed description <text>)
-msg-ds-embed-description: "<green>DiscordService embed description set to: <white><description>"
+# Sent when updating Discord embed description (/proxyguard settings discord embed description <text>)
+msg-ds-embed-description: "<green>Discord embed description set to: <white><description>"
 
-# Sent when updating DiscordService embed reason (/proxyguard settings discord embed reason <text>)
-msg-ds-embed-reason: "<green>DiscordService embed reason set to: <white><reason>"
+# Sent when updating Discord embed reason (/proxyguard settings discord embed reason <text>)
+msg-ds-embed-reason: "<green>Discord embed reason set to: <white><reason>"
 
-# DiscordService notification settings
+# Sent when passing an invalid IP to a whitelist command
+msg-invalid-ip: "<red>Invalid IP format! <dark_gray>• <gray>expected IPv4"
+
+# Sent when an IP is added to the whitelist (/proxyguard whitelist add <ip>)
+msg-whitelist-add: "<green>IP <white><ip> <green>added to whitelist"
+
+# Sent when an IP is removed from the whitelist (/proxyguard whitelist remove <ip>)
+msg-whitelist-remove: "<green>IP <white><ip> <green>removed from whitelist"
+
+# Entry format for the whitelist list output (/proxyguard whitelist list)
+msg-whitelist-list: "<dark_gray>• <white>IP<dark_gray>: <yellow><ip>"
+
+# Sent when the whitelist is empty (/proxyguard whitelist list)
+msg-whitelist-empty: "<dark_gray>• <red>There are no whitelisted IPs"
+
+# Discord notification settings
 discord:
   # Enable or disable sending detection logs to Discord webhook
   enabled: false
-  # DiscordService webhook URL
+  # Discord webhook URL
   webhook: "https://discord.com/api/webhooks/..."
   # Title displayed at the top of the Discord embed message
   embed-title: "Player blocked"

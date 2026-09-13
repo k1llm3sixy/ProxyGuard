@@ -21,7 +21,6 @@ abstract class BaseProvider
             Provider::class.java
         ))
         {
-            Provider.IP_API      -> IpApiProvider()
             Provider.VPN_API     -> VpnApiProvider()
             Provider.PROXY_CHECK -> ProxyCheckProvider()
         }
@@ -51,4 +50,5 @@ abstract class BaseProvider
     abstract suspend fun proxy(ip: String): Boolean
 
     abstract val provider: Provider
+    abstract val key: String
 }

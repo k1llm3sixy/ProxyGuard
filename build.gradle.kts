@@ -84,8 +84,6 @@ tasks {
 
         runDirectory.set(file("run-paper"))
 
-        serverJar(file("paper/paper-26.2-121.jar"))
-
         downloadPlugins {
             modrinth(
                 "mckotlin",
