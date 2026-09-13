@@ -13,14 +13,46 @@ import net.k1llm3sixy.proxyguard.error.safeCall
 import java.io.File
 import java.nio.file.Path
 
+enum class ConfigRoute(val route: Route)
+{
+    VPN_API_KEY(Route.from("vpn-api-key")),
+    PROXYCHECK_API_KEY(Route.from("proxycheck-api-key")),
+
+    MSG_CONFIG_RELOAD(Route.from("msg-config-reload")),
+    MSG_USER_EMPTY(Route.from("msg-users-empty")),
+    MSG_USERS(Route.from("msg-users")),
+    MSG_UNBAN_USER(Route.from("msg-unban-user")),
+
+    KICK_MESSAGE(Route.from("kick-message")),
+
+    MSG_SET_PROVIDER(Route.from("msg-set-provider")),
+
+    MSG_DS_ENABLE(Route.from("msg-ds-enable")),
+    MSG_DS_DISABLE(Route.from("msg-ds-disable")),
+    MSG_DS_EMBED_TITLE(Route.from("msg-ds-embed-title")),
+    MSG_DS_EMBED_DESC(Route.from("msg-ds-embed-description")),
+    MSG_DS_EMBED_REASON(Route.from("msg-ds-embed-reason")),
+
+    MSG_INVALID_IP(Route.from("msg-invalid-ip")),
+
+    MSG_WHITELIST_ADD(Route.from("msg-whitelist-add")),
+    MSG_WHITELIST_REMOVE(Route.from("msg-whitelist-remove")),
+    MSG_WHITELIST_LIST(Route.from("msg-whitelist-list")),
+    MSG_WHITELIST_EMPTY(Route.from("msg-whitelist-empty")),
+
+    DS_ENABLED(Route.from("discord").add("enabled")),
+    DS_WEBHOOK(Route.from("discord").add("webhook")),
+    DS_EMBED_TITLE(Route.from("discord").add("embed-title")),
+    DS_EMBED_DESC(Route.from("discord").add("embed-description")),
+    DS_EMBED_REASON(Route.from("discord").add("embed-reason")),
+}
+
 object Storage
 {
     lateinit var CONFIG: YamlDocument
         private set
 
     private lateinit var dataFolder: Path
-
-    private val dsRoute = Route.from("discord")
 
     fun init(dataDir: Path)
     {
@@ -47,16 +79,16 @@ object Storage
     fun toggleDs(state: Boolean)
     {
         CONFIG.set(
-            dsRoute.add("enabled"),
+            ConfigRoute.DS_ENABLED.route,
             state
         )
         save()
     }
 
-    fun setDsWebhook(route: String, text: String)
+    fun setDsWebhook(route: ConfigRoute, text: String)
     {
         CONFIG.set(
-            dsRoute.add(route),
+            route.route,
             text
         )
         save()

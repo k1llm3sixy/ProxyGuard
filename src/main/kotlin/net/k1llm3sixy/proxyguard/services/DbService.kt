@@ -223,7 +223,6 @@ object DbService
         return false
     }
 
-
     private fun runMigrations()
     {
         conn.createStatement().use {
@@ -232,7 +231,8 @@ object DbService
                     CREATE TABLE IF NOT EXISTS bad_users (
                 uuid TEXT PRIMARY KEY,
                 nick TEXT NOT NULL,
-                ip TEXT NOT NULL
+                ip TEXT NOT NULL,
+                banned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
                 """.trimIndent()
             )
@@ -240,7 +240,8 @@ object DbService
             it.execute(
                 """
                     CREATE TABLE IF NOT EXISTS ip_whitelist (
-                    ip TEXT PRIMARY KEY
+                    ip TEXT PRIMARY KEY,
+                    whitelisted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                     );
                 """.trimIndent()
             )
@@ -250,10 +251,19 @@ object DbService
                     CREATE TABLE IF NOT EXISTS valid_users (
                     uuid TEXT PRIMARY KEY,
                     nick TEXT NOT NULL,
-                    ip TEXT NOT NULL
+                    ip TEXT NOT NULL,
+                    validated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                     );
                 """.trimIndent()
             )
+        }
+    }
+
+    fun close()
+    {
+        if (::conn.isInitialized && !conn.isClosed)
+        {
+            conn.close()
         }
     }
 }

@@ -1,6 +1,7 @@
 package net.k1llm3sixy.proxyguard.provider
 
-import dev.dejvokep.boostedyaml.route.Route
+import net.k1llm3sixy.proxyguard.ext.get
+import net.k1llm3sixy.proxyguard.io.ConfigRoute
 import net.k1llm3sixy.proxyguard.io.Storage.CONFIG
 import java.net.URI
 
@@ -17,7 +18,7 @@ class ProxyCheckProvider : BaseProvider()
 
     override val provider = Provider.PROXY_CHECK
     override val key: String
-        get() = CONFIG.getString(Route.from("proxycheck-api-key"))
+        get() = CONFIG.get(ConfigRoute.PROXYCHECK_API_KEY)
 
     override suspend fun proxy(ip: String): Boolean
     {

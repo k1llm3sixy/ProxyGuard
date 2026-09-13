@@ -6,9 +6,10 @@ import com.mojang.brigadier.arguments.StringArgumentType.greedyString
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.velocitypowered.api.command.BrigadierCommand
 import com.velocitypowered.api.command.CommandSource
-import dev.dejvokep.boostedyaml.route.Route
 import kotlinx.coroutines.launch
 import net.k1llm3sixy.proxyguard.ProxyGuard.Companion.scope
+import net.k1llm3sixy.proxyguard.ext.get
+import net.k1llm3sixy.proxyguard.io.ConfigRoute
 import net.k1llm3sixy.proxyguard.io.Storage.CONFIG
 import net.k1llm3sixy.proxyguard.services.DbService
 import net.kyori.adventure.text.Component
@@ -33,14 +34,14 @@ object WhitelistCommand : BaseCommand()
 
                     if (!ipRegex.matches(ip))
                     {
-                        it.source.sendRichMessage(CONFIG.getString(Route.from("msg-invalid-ip")))
+                        it.source.sendRichMessage(CONFIG.get(ConfigRoute.MSG_INVALID_IP))
                         return@executes 0
                     }
 
                     scope.launch {
                         DbService.addWhitelist(ip)
                         val msg = miniMsg.deserialize(
-                            CONFIG.getString(Route.from("msg-whitelist-add")),
+                            CONFIG.get(ConfigRoute.MSG_WHITELIST_ADD),
                             Placeholder.component(
                                 "ip",
                                 Component.text(ip)
@@ -54,34 +55,34 @@ object WhitelistCommand : BaseCommand()
         ).then(
             BrigadierCommand.literalArgumentBuilder("remove").then(
                 BrigadierCommand.requiredArgumentBuilder(
-                "ip",
-                greedyString()
-            ).suggests { _, builder ->
-                val whitelisted = DbService.getWhitelisted()
-                whitelisted.forEach { builder.suggest(it) }
-                builder.buildFuture()
-            }.executes {
-                val ip = StringArgumentType.getString(
-                    it,
-                    "ip"
-                )
-                scope.launch {
-                    val result = DbService.removeWhitelist(ip)
+                    "ip",
+                    greedyString()
+                ).suggests { _, builder ->
+                    val whitelisted = DbService.getWhitelisted()
+                    whitelisted.forEach { builder.suggest(it) }
+                    builder.buildFuture()
+                }.executes {
+                    val ip = StringArgumentType.getString(
+                        it,
+                        "ip"
+                    )
+                    scope.launch {
+                        val result = DbService.removeWhitelist(ip)
 
-                    if (result)
-                    {
-                        val msg = miniMsg.deserialize(
-                            CONFIG.getString(Route.from("msg-whitelist-remove")),
-                            Placeholder.component(
-                                "ip",
-                                Component.text(ip)
+                        if (result)
+                        {
+                            val msg = miniMsg.deserialize(
+                                CONFIG.get(ConfigRoute.MSG_WHITELIST_REMOVE),
+                                Placeholder.component(
+                                    "ip",
+                                    Component.text(ip)
+                                )
                             )
-                        )
-                        it.source.sendMessage(msg)
+                            it.source.sendMessage(msg)
+                        }
                     }
-                }
-                Command.SINGLE_SUCCESS
-            })
+                    Command.SINGLE_SUCCESS
+                })
         ).then(
             BrigadierCommand.literalArgumentBuilder("list").executes { ctx ->
                 scope.launch {
@@ -89,13 +90,13 @@ object WhitelistCommand : BaseCommand()
 
                     if (whitelisted.isEmpty())
                     {
-                        ctx.source.sendRichMessage(CONFIG.getString(Route.from("msg-whitelist-empty")))
+                        ctx.source.sendRichMessage(CONFIG.get(ConfigRoute.MSG_WHITELIST_EMPTY))
                         return@launch
                     }
 
                     whitelisted.forEach {
                         val msg = miniMsg.deserialize(
-                            CONFIG.getString(Route.from("msg-whitelist-list")),
+                            CONFIG.get(ConfigRoute.MSG_WHITELIST_LIST),
                             Placeholder.component(
                                 "ip",
                                 Component.text(it)

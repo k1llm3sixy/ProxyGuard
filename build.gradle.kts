@@ -83,13 +83,6 @@ tasks {
         )
 
         runDirectory.set(file("run-paper"))
-
-        downloadPlugins {
-            modrinth(
-                "mckotlin",
-                "IL59nw3O"
-            )
-        }
     }
 
     runVelocity {

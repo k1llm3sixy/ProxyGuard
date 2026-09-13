@@ -1,10 +1,12 @@
 package net.k1llm3sixy.proxyguard.services
 
 import com.google.gson.Gson
-import dev.dejvokep.boostedyaml.route.Route
 import net.k1llm3sixy.proxyguard.ProxyGuard.Companion.LOGGER
 import net.k1llm3sixy.proxyguard.error.GuardError
 import net.k1llm3sixy.proxyguard.error.safeCall
+import net.k1llm3sixy.proxyguard.ext.get
+import net.k1llm3sixy.proxyguard.ext.getB
+import net.k1llm3sixy.proxyguard.io.ConfigRoute
 import net.k1llm3sixy.proxyguard.io.Storage.CONFIG
 import java.net.URI
 import java.net.http.HttpClient
@@ -39,17 +41,16 @@ private data class Footer(
 object DiscordService
 {
     private val client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build()
-    private val ds = Route.from("discord")
 
     fun sendWebhook(nick: String, ip: String)
     {
-        if (!CONFIG.getBoolean(ds.add("enabled"))) return
+        if (!CONFIG.getB(ConfigRoute.DS_ENABLED)) return
 
-        val title = CONFIG.getString(ds.add("embed-title"))
-        val description = CONFIG.getString(ds.add("embed-description"))
-        val reason = CONFIG.getString(ds.add("embed-reason"))
+        val title = CONFIG.get(ConfigRoute.DS_EMBED_TITLE)
+        val description = CONFIG.get(ConfigRoute.DS_EMBED_DESC)
+        val reason = CONFIG.get(ConfigRoute.DS_EMBED_REASON)
 
-        val uri = URI.create(CONFIG.getString(ds.add("webhook")))
+        val uri = URI.create(CONFIG.get(ConfigRoute.DS_WEBHOOK))
         val payload = WebhookPayload(
             listOf(
                 Embed(

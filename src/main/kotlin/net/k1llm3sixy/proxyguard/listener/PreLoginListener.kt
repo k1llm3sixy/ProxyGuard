@@ -7,6 +7,9 @@ import kotlinx.coroutines.launch
 import net.k1llm3sixy.proxyguard.ProxyGuard.Companion.scope
 import net.k1llm3sixy.proxyguard.error.GuardError
 import net.k1llm3sixy.proxyguard.error.safeCall
+import net.k1llm3sixy.proxyguard.ext.get
+import net.k1llm3sixy.proxyguard.io.ConfigRoute
+import net.k1llm3sixy.proxyguard.io.Storage.CONFIG
 import net.k1llm3sixy.proxyguard.services.GuardService
 import net.kyori.adventure.text.Component
 
@@ -28,7 +31,7 @@ class PreLoginListener
                     ))
                 {
                     event.result =
-                        PreLoginEvent.PreLoginComponentResult.denied(Component.text(GuardService.kickMessage))
+                        PreLoginEvent.PreLoginComponentResult.denied(Component.text(CONFIG.get(ConfigRoute.KICK_MESSAGE)))
                 }
 
                 continuation.resume()

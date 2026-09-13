@@ -6,7 +6,8 @@ import com.mojang.brigadier.arguments.StringArgumentType.greedyString
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.velocitypowered.api.command.BrigadierCommand
 import com.velocitypowered.api.command.CommandSource
-import dev.dejvokep.boostedyaml.route.Route
+import net.k1llm3sixy.proxyguard.ext.get
+import net.k1llm3sixy.proxyguard.io.ConfigRoute
 import net.k1llm3sixy.proxyguard.io.Storage
 import net.k1llm3sixy.proxyguard.io.Storage.CONFIG
 import net.kyori.adventure.text.Component
@@ -21,7 +22,7 @@ object DiscordCommand : BaseCommand()
                     .executes {
                         Storage.toggleDs(true)
 
-                        it.source.sendRichMessage(CONFIG.getString(Route.from("msg-ds-enable")))
+                        it.source.sendRichMessage(CONFIG.get(ConfigRoute.MSG_DS_ENABLE))
                         Command.SINGLE_SUCCESS
                     }
             )
@@ -30,7 +31,7 @@ object DiscordCommand : BaseCommand()
                     .executes {
                         Storage.toggleDs(false)
 
-                        it.source.sendRichMessage(CONFIG.getString(Route.from("msg-ds-disable")))
+                        it.source.sendRichMessage(CONFIG.get(ConfigRoute.MSG_DS_DISABLE))
                         Command.SINGLE_SUCCESS
                     }
             )
@@ -46,7 +47,7 @@ object DiscordCommand : BaseCommand()
                                 "url"
                             )
                             Storage.setDsWebhook(
-                                "webhook",
+                                ConfigRoute.DS_WEBHOOK,
                                 url
                             )
 
@@ -68,12 +69,12 @@ object DiscordCommand : BaseCommand()
                                         "text"
                                     )
                                     Storage.setDsWebhook(
-                                        "embed-title",
+                                        ConfigRoute.DS_EMBED_TITLE,
                                         text
                                     )
 
                                     val msg = miniMsg.deserialize(
-                                        CONFIG.getString("msg-ds-embed-title"),
+                                        CONFIG.get(ConfigRoute.MSG_DS_EMBED_TITLE),
                                         Placeholder.component(
                                             "title",
                                             Component.text(text)
@@ -96,12 +97,12 @@ object DiscordCommand : BaseCommand()
                                         "text"
                                     )
                                     Storage.setDsWebhook(
-                                        "embed-description",
+                                        ConfigRoute.DS_EMBED_DESC,
                                         text
                                     )
 
                                     val msg = miniMsg.deserialize(
-                                        CONFIG.getString("msg-ds-embed-description"),
+                                        CONFIG.get(ConfigRoute.MSG_DS_EMBED_DESC),
                                         Placeholder.component(
                                             "description",
                                             Component.text(text)
@@ -124,12 +125,12 @@ object DiscordCommand : BaseCommand()
                                         "text"
                                     )
                                     Storage.setDsWebhook(
-                                        "embed-reason",
+                                        ConfigRoute.DS_EMBED_REASON,
                                         text
                                     )
 
                                     val msg = miniMsg.deserialize(
-                                        CONFIG.getString("msg-ds-embed-reason"),
+                                        CONFIG.get(ConfigRoute.MSG_DS_EMBED_REASON),
                                         Placeholder.component(
                                             "reason",
                                             Component.text(text)
