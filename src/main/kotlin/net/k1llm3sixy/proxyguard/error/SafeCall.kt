@@ -6,10 +6,11 @@ import kotlin.coroutines.cancellation.CancellationException
 enum class GuardError(val message: String)
 {
     CONFIG_INIT("Failed to initialize config"),
+    CONFIG_RELOAD("Failed to reload config"),
     DB_GET("Failed to get database file"),
     DB_INIT("Failed to initialize and connect database"),
     DS_SEND_WEBHOOK("Failed to send discord webhook"),
-    LOGIN_EVENT("Error occurred while processing player login")
+    LOGIN_EVENT("Error occurred while processing player login"),
 }
 
 inline fun <T> safeCall(

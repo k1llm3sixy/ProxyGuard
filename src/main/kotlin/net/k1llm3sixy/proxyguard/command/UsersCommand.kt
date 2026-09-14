@@ -14,9 +14,9 @@ import net.k1llm3sixy.proxyguard.io.Storage.CONFIG
 import net.k1llm3sixy.proxyguard.services.DbService
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 
-object UsersCommand : BaseCommand()
+object UsersCommand : BaseCommand<LiteralArgumentBuilder<CommandSource>>()
 {
-    override fun create(): LiteralArgumentBuilder<CommandSource> =
+    override fun create() =
         BrigadierCommand.literalArgumentBuilder("users").executes {
             scope.launch {
                 val users = DbService.getUsers()

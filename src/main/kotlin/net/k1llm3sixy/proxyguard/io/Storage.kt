@@ -66,10 +66,11 @@ object Storage
         ).absolutePath
     }.getOrThrow()
 
-    private fun save()
+    fun reload()
     {
-        CONFIG.save()
-        CONFIG.reload()
+        safeCall(GuardError.CONFIG_RELOAD) {
+            CONFIG.reload()
+        }
     }
 
     private fun createDb()

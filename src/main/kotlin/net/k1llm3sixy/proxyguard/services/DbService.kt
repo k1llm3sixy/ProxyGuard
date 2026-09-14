@@ -9,18 +9,18 @@ import java.util.*
 
 private enum class Statement(val sql: String)
 {
-    ADD_USER("INSERT INTO bad_users (uuid, nick, ip) VALUES (?, ?, ?)"),
+    ADD_USER("INSERT OR REPLACE INTO bad_users (uuid, nick, ip) VALUES (?, ?, ?)"),
     GET_USER("SELECT EXISTS(SELECT 1 FROM bad_users WHERE uuid = ?)"),
     GET_USERS("SELECT uuid, nick, ip FROM bad_users"),
     GET_USERS_UUID("SELECT uuid FROM bad_users"),
     DELETE_USER("DELETE FROM bad_users WHERE uuid = ?"),
 
-    ADD_WHITELIST("INSERT INTO ip_whitelist (ip) VALUES (?)"),
+    ADD_WHITELIST("INSERT OR IGNORE INTO ip_whitelist (ip) VALUES (?)"),
     DELETE_WHITELIST("DELETE FROM ip_whitelist WHERE ip = ?"),
     GET_WHITELIST("SELECT EXISTS(SELECT 1 FROM ip_whitelist WHERE ip = ?)"),
     GET_WHITELISTED("SELECT ip FROM ip_whitelist"),
 
-    ADD_VALID_USER("INSERT INTO valid_users (uuid, nick, ip) VALUES (?, ?, ?)"),
+    ADD_VALID_USER("INSERT OR REPLACE INTO valid_users (uuid, nick, ip) VALUES (?, ?, ?)"),
     GET_VALID_USER("SELECT EXISTS(SELECT 1 FROM valid_users WHERE uuid = ?)"),
 }
 
