@@ -1,14 +1,16 @@
-A plugin for Velocity that detects connections via **proxy, VPN, and hosting** and blocks such players at the login
-stage
+A plugin for Velocity that detects connections via **proxy and VPN** and blocks such players at the login stage
 
 ## Features
 
 - IP check at the `PreLogin` stage through a selected provider
-- Blocks connections from proxies, VPNs, and hosting
+- Blocks connections from proxies and VPNs
 - Stores blocked players in a SQLite database
-- Discord webhook notifications with embed messages on block
+- Caches verified users so repeated connections don't hit the provider API again
+- IP whitelist to bypass the check
+- Blocks can be logged via Discord webhook with embed messages
 - `/proxyguard` command (alias `/pg`) for plugin management
 - Fully configurable messages and settings via `config.yml`
+- Anonymous usage statistics via bStats
 
 ## Commands
 
@@ -19,23 +21,18 @@ All commands require the `proxyguard.admin` permission
 | `/proxyguard reload`                                    | Reload the configuration          |
 | `/proxyguard users`                                     | List all blocked players          |
 | `/proxyguard unban <uuid>`                              | Unban a player by UUID            |
-| `/proxyguard settings provider <name>`                  | Switch the check provider         |
-| `/proxyguard settings discord enable`                   | Enable Discord notifications      |
-| `/proxyguard settings discord disable`                  | Disable Discord notifications     |
-| `/proxyguard settings discord webhook <url>`            | Set the webhook URL               |
-| `/proxyguard settings discord embed title <text>`       | Set the embed title               |
-| `/proxyguard settings discord embed description <text>` | Set the embed description         |
-| `/proxyguard settings discord embed reason <text>`      | Set the block reason in the embed |
+| `/proxyguard whitelist add <ip>`                        | Add an IP to the whitelist        |
+| `/proxyguard whitelist remove <ip>`                     | Remove an IP from the whitelist   |
+| `/proxyguard whitelist list`                            | List all whitelisted IPs          |
 
 ## IP providers
 
 The provider is set in `config.yml` (`provider`)
 
-| Value         | Service                                 | API key                         | Notes                                                             |
-|---------------|-----------------------------------------|---------------------------------|-------------------------------------------------------------------|
-| `IP_API`      | [ip-api.com](https://ip-api.com/)       | not required                    | Fields `proxy`, `hosting`                                         |
-| `VPN_API`     | [vpnapi.io](https://vpnapi.io/)         | required (`vpn-api-key`)        | Fields `security.vpn`, `security.proxy`                           |
-| `PROXY_CHECK` | [proxycheck.io](https://proxycheck.io/) | required (`proxycheck-api-key`) | Fields `detections.vpn`, `detections.proxy`, `detections.hosting` |
+| Value         | Service                                 | API key                         | Notes                                       |
+|---------------|-----------------------------------------|---------------------------------|---------------------------------------------|
+| `VPN_API`     | [vpnapi.io](https://vpnapi.io/)         | required (`vpn-api-key`)        | Fields `security.vpn`, `security.proxy`     |
+| `PROXY_CHECK` | [proxycheck.io](https://proxycheck.io/) | required (`proxycheck-api-key`) | Fields `detections.vpn`, `detections.proxy` |
 
 Each request is performed asynchronously with a 5-second timeout; on error or API unavailability the plugin login flow
 is not blocked
@@ -49,7 +46,7 @@ the following fields:
 - **Reason** — block reason
 - **IP** — IP address (hidden behind a spoiler)
 
-The embed title, description, and reason can be customized via the config or commands
+The embed title, description, and reason can be customized via the config
 
 > All text messages support the [MiniMessage](https://docs.papermc.io/adventure/minimessage/format/) format
 

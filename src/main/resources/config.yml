@@ -27,29 +27,8 @@ msg-unban-user: "<green>User <white><uuid> <green>unbanned"
 # Kick message
 kick-message: "VPN|Proxy detected"
 
-# Sent when changing the active provider via command (/proxyguard settings provider <name>)
-msg-set-provider: "<green>Provider set to: <white><provider>"
-
-# Sent when toggling Discord notifications on (/proxyguard settings discord enable)
-msg-ds-enable: "<green>Discord alerts enabled"
-
-# Sent when toggling Discord notifications off (/proxyguard settings discord disable)
-msg-ds-disable: "<red>Discord alerts disabled"
-
-# Sent when updating Discord embed title (/proxyguard settings discord embed title <text>)
-msg-ds-embed-title: "<green>Discord embed title set to: <white><title>"
-
-# Sent when updating Discord embed description (/proxyguard settings discord embed description <text>)
-msg-ds-embed-description: "<green>Discord embed description set to: <white><description>"
-
-# Sent when updating Discord embed reason (/proxyguard settings discord embed reason <text>)
-msg-ds-embed-reason: "<green>Discord embed reason set to: <white><reason>"
-
 # Sent when passing an invalid IP to a whitelist command
 msg-invalid-ip: "<red>Invalid IP format!"
-
-# Sent when passing an invalid url to a discord webhook command
-msg-invalid-webhook: "<red>Invalid Webhook url!"
 
 # Sent when an IP is added to the whitelist (/proxyguard whitelist add <ip>)
 msg-whitelist-add: "<green>IP <white><ip> <green>added to whitelist"

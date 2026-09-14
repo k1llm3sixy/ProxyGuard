@@ -11,7 +11,6 @@ object ProxyGuardCommand : BaseCommand()
         val node =
             BrigadierCommand.literalArgumentBuilder("proxyguard").requires { it.hasPermission("proxyguard.admin") }
                 .then(ReloadCommand.create())
-                .then(SettingsCommand.create())
                 .then(UsersCommand.create())
                 .then(UnbanCommand.create())
                 .then(WhitelistCommand.create())

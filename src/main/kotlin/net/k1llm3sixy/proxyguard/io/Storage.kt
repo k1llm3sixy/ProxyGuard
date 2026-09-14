@@ -25,16 +25,7 @@ enum class ConfigRoute(val route: Route)
 
     KICK_MESSAGE(Route.from("kick-message")),
 
-    MSG_SET_PROVIDER(Route.from("msg-set-provider")),
-
-    MSG_DS_ENABLE(Route.from("msg-ds-enable")),
-    MSG_DS_DISABLE(Route.from("msg-ds-disable")),
-    MSG_DS_EMBED_TITLE(Route.from("msg-ds-embed-title")),
-    MSG_DS_EMBED_DESC(Route.from("msg-ds-embed-description")),
-    MSG_DS_EMBED_REASON(Route.from("msg-ds-embed-reason")),
-
     MSG_INVALID_IP(Route.from("msg-invalid-ip")),
-    MSG_INVALID_WEBHOOK(Route.from("msg-invalid-webhook")),
 
     MSG_WHITELIST_ADD(Route.from("msg-whitelist-add")),
     MSG_WHITELIST_REMOVE(Route.from("msg-whitelist-remove")),
@@ -66,33 +57,6 @@ object Storage
 
             createDb()
         }.getOrThrow()
-    }
-
-    fun setProvider(provider: String)
-    {
-        CONFIG.set(
-            Route.from("provider"),
-            provider
-        )
-        save()
-    }
-
-    fun toggleDs(state: Boolean)
-    {
-        CONFIG.set(
-            ConfigRoute.DS_ENABLED.route,
-            state
-        )
-        save()
-    }
-
-    fun setDsWebhook(route: ConfigRoute, text: String)
-    {
-        CONFIG.set(
-            route.route,
-            text
-        )
-        save()
     }
 
     fun getDbPath(): String = safeCall(GuardError.DB_GET) {
