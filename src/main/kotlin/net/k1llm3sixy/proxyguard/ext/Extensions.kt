@@ -30,3 +30,5 @@ fun CommandSource.name(): String = when (this)
     is ConsoleCommandSource -> "Console"
     else                    -> "Unknown"
 }
+
+fun CommandSource.hasPerms(permission: String) = this.hasPermission("proxyguard.admin") || this.hasPermission(permission)

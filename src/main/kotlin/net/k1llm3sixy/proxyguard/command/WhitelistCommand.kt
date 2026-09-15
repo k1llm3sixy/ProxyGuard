@@ -11,6 +11,7 @@ import net.k1llm3sixy.proxyguard.ProxyGuard.Companion.LOGGER
 import net.k1llm3sixy.proxyguard.ProxyGuard.Companion.scope
 import net.k1llm3sixy.proxyguard.ext.deserialize
 import net.k1llm3sixy.proxyguard.ext.get
+import net.k1llm3sixy.proxyguard.ext.hasPerms
 import net.k1llm3sixy.proxyguard.ext.name
 import net.k1llm3sixy.proxyguard.io.ConfigRoute
 import net.k1llm3sixy.proxyguard.io.Storage.CONFIG
@@ -23,7 +24,9 @@ object WhitelistCommand : BaseCommand<LiteralArgumentBuilder<CommandSource>>()
     private val ipRegex =
         Regex("^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$")
 
-    override fun create() = BrigadierCommand.literalArgumentBuilder("whitelist").then(
+    override fun create() = BrigadierCommand.literalArgumentBuilder("whitelist")
+        .requires { it.hasPerms("proxyguard.whitelist") }
+        .then(
         BrigadierCommand.literalArgumentBuilder("add").then(
             BrigadierCommand.requiredArgumentBuilder(
                 "ip",

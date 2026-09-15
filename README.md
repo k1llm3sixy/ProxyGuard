@@ -12,8 +12,6 @@
 
 ## Commands
 
-> All commands require the `proxyguard.admin` permission
-
 | Command                             | Description                     |
 |-------------------------------------|---------------------------------|
 | `/proxyguard reload`                | Reload config                   |
@@ -22,6 +20,18 @@
 | `/proxyguard whitelist add <ip>`    | Add an IP to the whitelist      |
 | `/proxyguard whitelist remove <ip>` | Remove an IP from the whitelist |
 | `/proxyguard whitelist list`        | List all whitelisted IPs        |
+
+## Permissions
+
+`proxyguard.admin` grants access to all commands. Alternatively, each command can be granted individually:
+
+| Permission             | Command                       |
+|------------------------|-------------------------------|
+| `proxyguard.admin`     | All commands                  |
+| `proxyguard.reload`    | `/proxyguard reload`          |
+| `proxyguard.users`     | `/proxyguard users`           |
+| `proxyguard.unban`     | `/proxyguard unban <uuid>`    |
+| `proxyguard.whitelist` | `/proxyguard whitelist <...>` |
 
 ## IP providers
 

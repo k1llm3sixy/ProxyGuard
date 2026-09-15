@@ -8,6 +8,7 @@ import kotlinx.coroutines.launch
 import net.k1llm3sixy.proxyguard.ProxyGuard.Companion.scope
 import net.k1llm3sixy.proxyguard.ext.deserialize
 import net.k1llm3sixy.proxyguard.ext.get
+import net.k1llm3sixy.proxyguard.ext.hasPerms
 import net.k1llm3sixy.proxyguard.ext.text
 import net.k1llm3sixy.proxyguard.io.ConfigRoute
 import net.k1llm3sixy.proxyguard.io.Storage.CONFIG
@@ -17,7 +18,9 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 object UsersCommand : BaseCommand<LiteralArgumentBuilder<CommandSource>>()
 {
     override fun create() =
-        BrigadierCommand.literalArgumentBuilder("users").executes {
+        BrigadierCommand.literalArgumentBuilder("users")
+            .requires { it.hasPerms("proxyguard.users") }
+            .executes {
             scope.launch {
                 val users = DbService.getUsers()
 

@@ -5,7 +5,7 @@ import com.velocitypowered.api.command.BrigadierCommand
 object ProxyGuardCommand : BaseCommand<BrigadierCommand>()
 {
     override fun create() = BrigadierCommand(
-        BrigadierCommand.literalArgumentBuilder("proxyguard").requires { it.hasPermission("proxyguard.admin") }
+        BrigadierCommand.literalArgumentBuilder("proxyguard")
             .then(ReloadCommand.create())
             .then(UsersCommand.create())
             .then(UnbanCommand.create())

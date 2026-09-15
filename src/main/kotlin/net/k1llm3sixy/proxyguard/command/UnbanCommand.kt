@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import net.k1llm3sixy.proxyguard.ProxyGuard.Companion.LOGGER
 import net.k1llm3sixy.proxyguard.ProxyGuard.Companion.scope
 import net.k1llm3sixy.proxyguard.ext.deserialize
+import net.k1llm3sixy.proxyguard.ext.hasPerms
 import net.k1llm3sixy.proxyguard.ext.name
 import net.k1llm3sixy.proxyguard.io.ConfigRoute
 import net.k1llm3sixy.proxyguard.services.DbService
@@ -19,7 +20,9 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 object UnbanCommand : BaseCommand<LiteralArgumentBuilder<CommandSource>>()
 {
     override fun create() =
-        BrigadierCommand.literalArgumentBuilder("unban").then(
+        BrigadierCommand.literalArgumentBuilder("unban")
+            .requires { it.hasPerms("proxyguard.unban") }
+            .then(
             BrigadierCommand.requiredArgumentBuilder(
                 "uuid",
                 greedyString()
