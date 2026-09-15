@@ -5,6 +5,12 @@ file-version: 1
 # PROXY_CHECK - https://proxycheck.io/
 provider: PROXY_CHECK
 
+# Available checks:
+# ALL - all checks
+# PROXY - only proxy
+# VPN - only vpn
+check: ALL
+
 # Uncomment and set your API key if using VPN_API provider
 #vpn-api-key:
 
@@ -24,8 +30,11 @@ msg-users: "<dark_gray>• <green><nick> <dark_gray>| <gray>IP: <yellow><ip> <da
 # Sent when a user is unbanned (/proxyguard unban <uuid>)
 msg-unban-user: "<green>User <white><uuid> <green>unbanned"
 
-# Kick message
-kick-message: "VPN|Proxy detected"
+# Kick message when proxy detected
+kick-proxy-msg: "Proxy detected!"
+
+# Kick message when vpn detected
+kick-vpn-msg: "VPN detected!"
 
 # Sent when passing an invalid IP to a whitelist command
 msg-invalid-ip: "<red>Invalid IP format!"
@@ -52,5 +61,3 @@ discord:
   embed-title: "Player blocked"
   # Explanation of the event shown in the embed body
   embed-description: "A player was blocked while attempting to join the server with an active proxy or VPN"
-  # Field specifying the detailed reason for the block
-  embed-reason: "VPN|Proxy detected"

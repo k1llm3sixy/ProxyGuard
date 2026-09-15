@@ -11,6 +11,7 @@ enum class GuardError(val message: String)
     DB_INIT("Failed to initialize and connect database"),
     DS_SEND_WEBHOOK("Failed to send discord webhook"),
     LOGIN_EVENT("Error occurred while processing player login"),
+    B_STATS("Failed to send bstats metrics"),
 }
 
 inline fun <T> safeCall(

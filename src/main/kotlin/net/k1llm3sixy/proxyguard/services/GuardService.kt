@@ -2,53 +2,59 @@ package net.k1llm3sixy.proxyguard.services
 
 import net.k1llm3sixy.proxyguard.ProxyGuard.Companion.LOGGER
 import net.k1llm3sixy.proxyguard.provider.BaseProvider
+import net.k1llm3sixy.proxyguard.provider.Reason
 import java.util.*
 
 object GuardService
 {
-    suspend fun block(ip: String, uuid: UUID, nick: String): Boolean
+    suspend fun block(ip: String, uuid: UUID, nick: String): Reason?
     {
         val local = ip == "127.0.0.1" || ip == "localhost"
         val bypass = DbService.getWhitelist(ip) || DbService.getValidUser(uuid)
         if (local || bypass)
         {
             LOGGER.debug(
-                "Skipped check for {} ({}) - IP is local connection or bypass",
+                "Skipped check for {} ({}) - IP is local or bypass",
                 nick,
                 ip
             )
-            return false
+            return null
         }
 
         if (DbService.getUser(uuid))
         {
+            val reason = DbService.getUserReason(uuid)
             LOGGER.debug(
-                "Rejected {} ({}) - already in bad_users",
+                "Rejected {} ({}) {} - already in bad_users",
                 nick,
-                ip
+                ip,
+                reason
             )
-            return true
+            return reason
         }
-        val proxy = BaseProvider.provider().proxy(ip)
+        val reason = BaseProvider.provider().proxy(ip)
 
-        if (proxy)
+        if (reason != null)
         {
             DbService.addUser(
                 uuid,
                 nick,
-                ip
+                ip,
+                reason
             )
             DiscordService.sendWebhook(
                 nick,
-                ip
+                ip,
+                reason.name
             )
 
             LOGGER.info(
-                "Blocked {} ({}) - proxy/VPN detected",
+                "Blocked {} ({}) - {}",
                 nick,
-                ip
+                ip,
+                reason
             )
-            return true
+            return reason
         }
 
         DbService.addValidUser(
@@ -62,6 +68,6 @@ object GuardService
             nick,
             ip
         )
-        return false
+        return null
     }
 }

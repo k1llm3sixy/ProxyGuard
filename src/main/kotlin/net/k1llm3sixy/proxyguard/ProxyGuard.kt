@@ -11,6 +11,8 @@ import com.velocitypowered.api.proxy.ProxyServer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import net.k1llm3sixy.proxyguard.command.ProxyGuardCommand
+import net.k1llm3sixy.proxyguard.error.GuardError
+import net.k1llm3sixy.proxyguard.error.safeCall
 import net.k1llm3sixy.proxyguard.io.Storage
 import net.k1llm3sixy.proxyguard.listener.PreLoginListener
 import net.k1llm3sixy.proxyguard.services.DbService
@@ -42,11 +44,14 @@ class ProxyGuard @Inject constructor(
     @Subscribe
     fun onProxyInitialization(e: ProxyInitializeEvent)
     {
-        val id = 33992
-        metrics.make(
-            this,
-            id
-        )
+        safeCall(GuardError.B_STATS) {
+            val id = 33992
+            metrics.make(
+                this,
+                id
+            )
+        }
+
         LOGGER = logger
         scope = CoroutineScope(Dispatchers.IO)
         Storage.init(dataDir)

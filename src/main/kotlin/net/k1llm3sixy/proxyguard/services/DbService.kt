@@ -3,14 +3,16 @@ package net.k1llm3sixy.proxyguard.services
 import net.k1llm3sixy.proxyguard.error.GuardError
 import net.k1llm3sixy.proxyguard.error.safeCall
 import net.k1llm3sixy.proxyguard.io.Storage
+import net.k1llm3sixy.proxyguard.provider.Reason
 import java.sql.Connection
 import java.sql.DriverManager
 import java.util.*
 
 private enum class Statement(val sql: String)
 {
-    ADD_USER("INSERT OR REPLACE INTO bad_users (uuid, nick, ip) VALUES (?, ?, ?)"),
+    ADD_USER("INSERT OR REPLACE INTO bad_users (uuid, nick, ip, reason) VALUES (?, ?, ?, ?)"),
     GET_USER("SELECT EXISTS(SELECT 1 FROM bad_users WHERE uuid = ?)"),
+    GET_USER_REASON("SELECT reason FROM bad_users WHERE uuid = ?"),
     GET_USERS("SELECT uuid, nick, ip FROM bad_users"),
     GET_USERS_UUID("SELECT uuid FROM bad_users"),
     DELETE_USER("DELETE FROM bad_users WHERE uuid = ?"),
@@ -51,7 +53,7 @@ object DbService
         runMigrations()
     }
 
-    fun addUser(uuid: UUID, nick: String, ip: String)
+    fun addUser(uuid: UUID, nick: String, ip: String, reason: Reason)
     {
         conn.prepareStatement(Statement.ADD_USER.sql).use {
             it.setString(
@@ -65,6 +67,10 @@ object DbService
             it.setString(
                 3,
                 ip
+            )
+            it.setString(
+                4,
+                reason.name
             )
 
             it.executeUpdate()
@@ -98,6 +104,25 @@ object DbService
         }
 
         return false
+    }
+
+    fun getUserReason(uuid: UUID): Reason?
+    {
+        conn.prepareStatement(Statement.GET_USER_REASON.sql).use {
+            it.setString(
+                1,
+                uuid.toString()
+            )
+            it.executeQuery().use { rs ->
+                if (rs.next())
+                {
+                    val reason = Reason.valueOf(rs.getString(1))
+                    return reason
+                }
+            }
+        }
+
+        return null
     }
 
     fun getUsers(): List<UserRecord>
@@ -243,6 +268,7 @@ object DbService
                 uuid TEXT PRIMARY KEY,
                 nick TEXT NOT NULL,
                 ip TEXT NOT NULL,
+                reason TEXT NOT NULL,
                 banned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
                 """.trimIndent()

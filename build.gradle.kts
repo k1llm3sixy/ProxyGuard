@@ -59,6 +59,10 @@ tasks {
 
     runVelocity {
         velocityVersion("4.1.2-SNAPSHOT")
+        jvmArgs(
+            "-Xms512M",
+            "-Xmx512M",
+        )
 
         downloadPlugins {
             modrinth(

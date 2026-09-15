@@ -10,6 +10,9 @@ import dev.dejvokep.boostedyaml.settings.updater.UpdaterSettings
 import net.k1llm3sixy.proxyguard.ProxyGuard
 import net.k1llm3sixy.proxyguard.error.GuardError
 import net.k1llm3sixy.proxyguard.error.safeCall
+import net.k1llm3sixy.proxyguard.ext.get
+import net.k1llm3sixy.proxyguard.provider.Reason
+
 import java.io.File
 import java.nio.file.Path
 
@@ -23,7 +26,8 @@ enum class ConfigRoute(val route: Route)
     MSG_USERS(Route.from("msg-users")),
     MSG_UNBAN_USER(Route.from("msg-unban-user")),
 
-    KICK_MESSAGE(Route.from("kick-message")),
+    KICK_PROXY_MSG(Route.from("kick-proxy-msg")),
+    KICK_VPN_MSG(Route.from("kick-vpn-msg")),
 
     MSG_INVALID_IP(Route.from("msg-invalid-ip")),
 
@@ -36,7 +40,13 @@ enum class ConfigRoute(val route: Route)
     DS_WEBHOOK(Route.from("discord").add("webhook")),
     DS_EMBED_TITLE(Route.from("discord").add("embed-title")),
     DS_EMBED_DESC(Route.from("discord").add("embed-description")),
-    DS_EMBED_REASON(Route.from("discord").add("embed-reason")),
+}
+
+enum class Check
+{
+    ALL,
+    PROXY,
+    VPN
 }
 
 object Storage
@@ -49,7 +59,6 @@ object Storage
     fun init(dataDir: Path)
     {
         safeCall(GuardError.CONFIG_INIT) {
-
             dataFolder = dataDir
             CONFIG = createConfig()
             CONFIG.update()
@@ -57,6 +66,17 @@ object Storage
 
             createDb()
         }.getOrThrow()
+    }
+
+    fun getCheck(): Check = CONFIG.getEnum(
+        Route.from("check"),
+        Check::class.java
+    )
+
+    fun getKickMsg(reason: Reason): String = when (reason)
+    {
+        Reason.PROXY -> CONFIG.get(ConfigRoute.KICK_PROXY_MSG)
+        Reason.VPN   -> CONFIG.get(ConfigRoute.KICK_VPN_MSG)
     }
 
     fun getDbPath(): String = safeCall(GuardError.DB_GET) {

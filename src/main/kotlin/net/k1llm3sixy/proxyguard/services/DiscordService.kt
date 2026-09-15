@@ -1,6 +1,7 @@
 package net.k1llm3sixy.proxyguard.services
 
 import com.google.gson.Gson
+import com.google.gson.annotations.SerializedName
 import net.k1llm3sixy.proxyguard.ProxyGuard.Companion.LOGGER
 import net.k1llm3sixy.proxyguard.error.GuardError
 import net.k1llm3sixy.proxyguard.error.safeCall
@@ -36,19 +37,21 @@ private data class Field(
 
 private data class Footer(
     val text: String,
+    @SerializedName("icon_url")
+    val icon: String,
 )
 
 object DiscordService
 {
     private val client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build()
 
-    fun sendWebhook(nick: String, ip: String)
+    fun sendWebhook(nick: String, ip: String, reason: String)
     {
         if (!CONFIG.getB(ConfigRoute.DS_ENABLED)) return
 
         val title = CONFIG.get(ConfigRoute.DS_EMBED_TITLE)
         val description = CONFIG.get(ConfigRoute.DS_EMBED_DESC)
-        val reason = CONFIG.get(ConfigRoute.DS_EMBED_REASON)
+        val icon = "https://i.ibb.co/Hfv2KYRR/icon.png"
 
         val uri = URI.create(CONFIG.get(ConfigRoute.DS_WEBHOOK))
         val payload = WebhookPayload(
@@ -65,7 +68,7 @@ object DiscordService
                         ),
                         Field(
                             "Reason",
-                            reason,
+                            "`$reason`",
                             true
                         ),
                         Field(
@@ -75,7 +78,8 @@ object DiscordService
                         )
                     ),
                     Footer(
-                        "Proxy Guard"
+                        "Proxy Guard",
+                        icon
                     ),
                     "${Instant.now()}"
                 )
