@@ -123,7 +123,7 @@ object DbService
         }
     }
 
-    fun getUserReason(uuid: UUID): Reason?
+    fun getUserReason(uuid: UUID): Reason
     {
         conn.prepareStatement(Statement.GET_USER.sql).use {
             it.setString(
@@ -139,7 +139,7 @@ object DbService
             }
         }
 
-        return null
+        return Reason.EMPTY
     }
 
     fun getUsers(): List<UserRecord>

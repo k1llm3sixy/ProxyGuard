@@ -7,7 +7,7 @@ import java.util.*
 
 object GuardService
 {
-    suspend fun block(ip: String, uuid: UUID, nick: String): Reason?
+    suspend fun block(ip: String, uuid: UUID, nick: String): Reason
     {
         val local = ip == "127.0.0.1" || ip == "localhost"
         val bypass = DbService.getWhitelist(ip) || DbService.getValidUser(uuid)
@@ -18,12 +18,12 @@ object GuardService
                 nick,
                 ip
             )
-            return null
+            return Reason.EMPTY
         }
 
         val userReason = DbService.getUserReason(uuid)
 
-        if (userReason != null)
+        if (userReason != Reason.EMPTY)
         {
             LOGGER.debug(
                 "Rejected {} ({}) {} - already in bad_users",
@@ -35,7 +35,7 @@ object GuardService
         }
         val reason = BaseProvider.provider().proxy(ip)
 
-        if (reason != null)
+        if (reason != Reason.EMPTY)
         {
             DbService.addUser(
                 uuid,
@@ -69,6 +69,6 @@ object GuardService
             nick,
             ip
         )
-        return null
+        return Reason.EMPTY
     }
 }

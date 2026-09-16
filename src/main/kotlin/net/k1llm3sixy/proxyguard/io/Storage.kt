@@ -78,6 +78,7 @@ object Storage
     {
         Reason.PROXY -> CONFIG.get(ConfigRoute.KICK_PROXY_MSG)
         Reason.VPN   -> CONFIG.get(ConfigRoute.KICK_VPN_MSG)
+        Reason.EMPTY -> ""
     }
 
     fun getDbPath(): String = safeCall(GuardError.DB_GET) {

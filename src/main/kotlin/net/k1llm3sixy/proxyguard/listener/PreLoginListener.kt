@@ -8,6 +8,7 @@ import net.k1llm3sixy.proxyguard.ProxyGuard.Companion.scope
 import net.k1llm3sixy.proxyguard.error.GuardError
 import net.k1llm3sixy.proxyguard.error.safeCall
 import net.k1llm3sixy.proxyguard.io.Storage
+import net.k1llm3sixy.proxyguard.provider.Reason
 import net.k1llm3sixy.proxyguard.services.GuardService
 import net.kyori.adventure.text.Component
 
@@ -28,7 +29,7 @@ class PreLoginListener
                     nick
                 )
 
-                if (reason != null)
+                if (reason != Reason.EMPTY)
                 {
                     event.result = PreLoginEvent.PreLoginComponentResult.denied(
                         Component.text(Storage.getKickMsg(reason))
