@@ -72,10 +72,17 @@ abstract class BaseProvider
     protected val gson = Gson()
 
     protected val client: HttpClient =
-        HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NEVER).connectTimeout(Duration.ofSeconds(5)).build()
+        HttpClient.newBuilder()
+            .followRedirects(HttpClient.Redirect.NEVER)
+            .connectTimeout(Duration.ofSeconds(5))
+            .build()
 
     protected fun createRequest(uri: URI): HttpRequest =
-        HttpRequest.newBuilder().uri(uri).timeout(Duration.ofSeconds(5)).GET().build()
+        HttpRequest.newBuilder()
+            .uri(uri)
+            .timeout(Duration.ofSeconds(5))
+            .GET()
+            .build()
 
     abstract suspend fun proxy(ip: String): Reason
 }

@@ -55,6 +55,8 @@ object Storage
     lateinit var CONFIG: YamlDocument
         private set
 
+    lateinit var DB_PATH: String
+
     private lateinit var dataFolder: Path
 
     fun init(dataDir: Path)
@@ -65,7 +67,7 @@ object Storage
             CONFIG.update()
             CONFIG.save()
 
-            createDb()
+            DB_PATH = createDb()
         }.getOrThrow()
     }
 
@@ -81,13 +83,6 @@ object Storage
         Reason.EMPTY -> ""
     }
 
-    fun getDbPath(): String = safeCall(GuardError.DB_GET) {
-        File(
-            dataFolder.toFile(),
-            "proxyguard.db"
-        ).absolutePath
-    }.getOrThrow()
-
     fun reload()
     {
         safeCall(GuardError.CONFIG_RELOAD) {
@@ -95,13 +90,15 @@ object Storage
         }
     }
 
-    private fun createDb()
+    private fun createDb(): String
     {
         val file = File(
             dataFolder.toFile(),
             "proxyguard.db"
         )
         if (!file.exists()) file.createNewFile()
+
+        return file.absolutePath
     }
 
     private fun createConfig() = YamlDocument.create(

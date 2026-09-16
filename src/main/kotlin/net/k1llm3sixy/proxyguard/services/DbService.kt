@@ -50,11 +50,9 @@ object DbService
 
     fun init()
     {
-        val db = Storage.getDbPath()
-
         conn = safeCall(GuardError.DB_INIT) {
             Class.forName("org.sqlite.JDBC")
-            DriverManager.getConnection("jdbc:sqlite:$db")
+            DriverManager.getConnection("jdbc:sqlite:${Storage.DB_PATH}")
         }.getOrThrow()
 
         conn.createStatement().use {
