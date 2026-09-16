@@ -67,47 +67,45 @@ object DbService
 
     fun addUser(uuid: UUID, nick: String, ip: String, reason: Reason)
     {
-        conn.prepareStatement(Statement.ADD_USER.sql).use {
-            it.setString(
-                1,
-                uuid.toString()
-            )
-            it.setString(
-                2,
-                nick
-            )
-            it.setString(
-                3,
-                ip
-            )
-            it.setString(
-                4,
-                reason.name
-            )
+        safeCall(GuardError.DB_QUERY) {
+            conn.prepareStatement(Statement.ADD_USER.sql).use {
+                it.setString(
+                    1,
+                    uuid.toString()
+                )
+                it.setString(
+                    2,
+                    nick
+                )
+                it.setString(
+                    3,
+                    ip
+                )
+                it.setString(
+                    4,
+                    reason.name
+                )
 
-            it.executeUpdate()
+                it.executeUpdate()
+            }
         }
     }
 
     fun removeUser(type: Type, data: String): Boolean
     {
-        return when (type)
-        {
-            Type.UUID -> remove(
-                Statement.DELETE_USER_BY_UUID,
-                data
-            )
+        return safeCall(GuardError.DB_QUERY) {
+            val stmt = when (type)
+            {
+                Type.UUID -> Statement.DELETE_USER_BY_UUID
+                Type.NICK -> Statement.DELETE_USER_BY_NICK
+                Type.IP   -> Statement.DELETE_USER_BY_IP
+            }
 
-            Type.NICK -> remove(
-                Statement.DELETE_USER_BY_NICK,
+            remove(
+                stmt,
                 data
             )
-
-            Type.IP   -> remove(
-                Statement.DELETE_USER_BY_IP,
-                data
-            )
-        }
+        }.getOrDefault(false)
     }
 
     private fun remove(stmt: Statement, data: String): Boolean
@@ -125,172 +123,183 @@ object DbService
 
     fun getUserReason(uuid: UUID): Reason
     {
-        conn.prepareStatement(Statement.GET_USER.sql).use {
-            it.setString(
-                1,
-                uuid.toString()
-            )
-            it.executeQuery().use { rs ->
-                if (rs.next())
-                {
-                    val reason = Reason.valueOf(rs.getString(1))
-                    return reason
+        return safeCall(GuardError.DB_QUERY) {
+            conn.prepareStatement(Statement.GET_USER.sql).use {
+                it.setString(
+                    1,
+                    uuid.toString()
+                )
+                it.executeQuery().use { rs ->
+                    if (rs.next())
+                    {
+                        Reason.valueOf(rs.getString(1))
+                    }
+                    else Reason.EMPTY
                 }
             }
-        }
-
-        return Reason.EMPTY
+        }.getOrDefault(Reason.EMPTY)
     }
 
     fun getUsers(): List<UserRecord>
     {
-        val users = mutableListOf<UserRecord>()
+        return safeCall(GuardError.DB_QUERY) {
+            val users = mutableListOf<UserRecord>()
 
-        conn.prepareStatement(Statement.GET_USERS.sql).use {
-            it.executeQuery().use { rs ->
-                while (rs.next())
-                {
-                    val uuid = rs.getString("uuid")
-                    val nick = rs.getString("nick")
-                    val ip = rs.getString("ip")
-                    val reason = rs.getString("reason")
-                    val time = rs.getString("banned_at")
+            conn.prepareStatement(Statement.GET_USERS.sql).use {
+                it.executeQuery().use { rs ->
+                    while (rs.next())
+                    {
+                        val uuid = rs.getString("uuid")
+                        val nick = rs.getString("nick")
+                        val ip = rs.getString("ip")
+                        val reason = rs.getString("reason")
+                        val time = rs.getString("banned_at")
 
-                    val record = UserRecord(
-                        uuid,
-                        nick,
-                        ip,
-                        reason,
-                        time
-                    )
-                    users.add(record)
+                        val record = UserRecord(
+                            uuid,
+                            nick,
+                            ip,
+                            reason,
+                            time
+                        )
+                        users.add(record)
+                    }
                 }
             }
-        }
 
-        return users
+            users
+        }.getOrDefault(emptyList())
     }
 
     fun getUsersData(type: Type): List<String>
     {
-        val stmt = when (type)
-        {
-            Type.IP   -> Statement.GET_USERS_IP
-            Type.NICK -> Statement.GET_USERS_NICK
-            Type.UUID -> Statement.GET_USERS_UUID
-        }
-        val data = mutableListOf<String>()
+        return safeCall(GuardError.DB_QUERY) {
+            val stmt = when (type)
+            {
+                Type.IP   -> Statement.GET_USERS_IP
+                Type.NICK -> Statement.GET_USERS_NICK
+                Type.UUID -> Statement.GET_USERS_UUID
+            }
+            val data = mutableListOf<String>()
 
-        conn.prepareStatement(stmt.sql).use {
-            it.executeQuery().use { rs ->
-                while (rs.next())
-                {
-                    data.add(rs.getString(1))
+            conn.prepareStatement(stmt.sql).use {
+                it.executeQuery().use { rs ->
+                    while (rs.next())
+                    {
+                        data.add(rs.getString(1))
+                    }
                 }
             }
-        }
 
-        return data
+            data
+        }.getOrDefault(emptyList())
     }
 
     fun addWhitelist(ip: String)
     {
-        conn.prepareStatement(Statement.ADD_WHITELIST.sql).use {
-            it.setString(
-                1,
-                ip
-            )
+        safeCall(GuardError.DB_QUERY) {
+            conn.prepareStatement(Statement.ADD_WHITELIST.sql).use {
+                it.setString(
+                    1,
+                    ip
+                )
 
-            it.executeUpdate()
+                it.executeUpdate()
+            }
         }
     }
 
     fun removeWhitelist(ip: String): Boolean
     {
-        conn.prepareStatement(Statement.DELETE_WHITELIST.sql).use {
-            it.setString(
-                1,
-                ip
-            )
+        return safeCall(GuardError.DB_QUERY) {
+            conn.prepareStatement(Statement.DELETE_WHITELIST.sql).use {
+                it.setString(
+                    1,
+                    ip
+                )
 
-            val affected = it.executeUpdate()
-
-            return affected > 0
-        }
+                it.executeUpdate() > 0
+            }
+        }.getOrDefault(false)
     }
 
     fun getWhitelist(ip: String): Boolean
     {
-        conn.prepareStatement(Statement.GET_WHITELIST.sql).use {
-            it.setString(
-                1,
-                ip
-            )
-            it.executeQuery().use { rs ->
-                if (rs.next()) return rs.getBoolean(1)
+        return safeCall(GuardError.DB_QUERY) {
+            conn.prepareStatement(Statement.GET_WHITELIST.sql).use {
+                it.setString(
+                    1,
+                    ip
+                )
+                it.executeQuery().use { rs ->
+                    rs.next() && rs.getBoolean(1)
+                }
             }
-        }
-
-        return false
+        }.getOrDefault(false)
     }
 
     fun getWhitelisted(): List<String>
     {
-        val whitelisted = mutableListOf<String>()
+        return safeCall(GuardError.DB_QUERY) {
+            val whitelisted = mutableListOf<String>()
 
-        conn.prepareStatement(Statement.GET_WHITELISTED.sql).use {
-            it.executeQuery().use { rs ->
-                while (rs.next())
-                {
-                    val ip = rs.getString("ip")
-                    whitelisted.add(ip)
+            conn.prepareStatement(Statement.GET_WHITELISTED.sql).use {
+                it.executeQuery().use { rs ->
+                    while (rs.next())
+                    {
+                        val ip = rs.getString("ip")
+                        whitelisted.add(ip)
+                    }
                 }
             }
-        }
 
-        return whitelisted
+            whitelisted
+        }.getOrDefault(emptyList())
     }
 
     fun addValidUser(uuid: UUID, nick: String, ip: String)
     {
-        conn.prepareStatement(Statement.ADD_VALID_USER.sql).use {
-            it.setString(
-                1,
-                uuid.toString()
-            )
-            it.setString(
-                2,
-                nick
-            )
-            it.setString(
-                3,
-                ip
-            )
+        safeCall(GuardError.DB_QUERY) {
+            conn.prepareStatement(Statement.ADD_VALID_USER.sql).use {
+                it.setString(
+                    1,
+                    uuid.toString()
+                )
+                it.setString(
+                    2,
+                    nick
+                )
+                it.setString(
+                    3,
+                    ip
+                )
 
-            it.executeUpdate()
+                it.executeUpdate()
+            }
         }
     }
 
     fun getValidUser(uuid: UUID): Boolean
     {
-        conn.prepareStatement(Statement.GET_VALID_USER.sql).use {
-            it.setString(
-                1,
-                uuid.toString()
-            )
-            it.executeQuery().use { rs ->
-                if (rs.next()) return rs.getBoolean(1)
+        return safeCall(GuardError.DB_QUERY) {
+            conn.prepareStatement(Statement.GET_VALID_USER.sql).use {
+                it.setString(
+                    1,
+                    uuid.toString()
+                )
+                it.executeQuery().use { rs ->
+                    rs.next() && rs.getBoolean(1)
+                }
             }
-        }
-
-        return false
+        }.getOrDefault(false)
     }
 
     private fun runMigrations()
     {
-        conn.createStatement().use {
-            it.execute(
-                """
+        safeCall(GuardError.DB_QUERY) {
+            conn.createStatement().use {
+                it.execute(
+                    """
                     CREATE TABLE IF NOT EXISTS bad_users (
                 uuid TEXT PRIMARY KEY,
                 nick TEXT NOT NULL,
@@ -299,19 +308,19 @@ object DbService
                 banned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
                 """.trimIndent()
-            )
+                )
 
-            it.execute(
-                """
+                it.execute(
+                    """
                     CREATE TABLE IF NOT EXISTS ip_whitelist (
                     ip TEXT PRIMARY KEY,
                     whitelisted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                     );
                 """.trimIndent()
-            )
+                )
 
-            it.execute(
-                """
+                it.execute(
+                    """
                     CREATE TABLE IF NOT EXISTS valid_users (
                     uuid TEXT PRIMARY KEY,
                     nick TEXT NOT NULL,
@@ -319,15 +328,18 @@ object DbService
                     validated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                     );
                 """.trimIndent()
-            )
-        }
+                )
+            }
+        }.getOrDefault(Unit)
     }
 
     fun close()
     {
-        if (::conn.isInitialized && !conn.isClosed)
-        {
-            conn.close()
+        safeCall(GuardError.DB_QUERY) {
+            if (::conn.isInitialized && !conn.isClosed)
+            {
+                conn.close()
+            }
         }
     }
 }
