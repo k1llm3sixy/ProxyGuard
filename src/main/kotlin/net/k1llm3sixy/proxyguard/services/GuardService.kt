@@ -21,16 +21,17 @@ object GuardService
             return null
         }
 
-        if (DbService.getUser(uuid))
+        val userReason = DbService.getUserReason(uuid)
+
+        if (userReason != null)
         {
-            val reason = DbService.getUserReason(uuid)
             LOGGER.debug(
                 "Rejected {} ({}) {} - already in bad_users",
                 nick,
                 ip,
-                reason
+                userReason
             )
-            return reason
+            return userReason
         }
         val reason = BaseProvider.provider().proxy(ip)
 

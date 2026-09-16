@@ -23,8 +23,9 @@ enum class ConfigRoute(val route: Route)
 
     MSG_CONFIG_RELOAD(Route.from("msg-config-reload")),
     MSG_USER_EMPTY(Route.from("msg-users-empty")),
+    MSG_USERS_TITLE(Route.from("msg-users-title")),
     MSG_USERS(Route.from("msg-users")),
-    MSG_UNBAN_USER(Route.from("msg-unban-user")),
+    MSG_UNBAN(Route.from("msg-unban")),
 
     KICK_PROXY_MSG(Route.from("kick-proxy-msg")),
     KICK_VPN_MSG(Route.from("kick-vpn-msg")),

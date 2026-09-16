@@ -16,9 +16,9 @@ object ReloadCommand : BaseCommand<LiteralArgumentBuilder<CommandSource>>()
         BrigadierCommand.literalArgumentBuilder("reload")
             .requires { it.hasPerms("proxyguard.reload") }
             .executes {
-            Storage.reload()
-            it.source.sendRichMessage(CONFIG.get(ConfigRoute.MSG_CONFIG_RELOAD))
+                Storage.reload()
+                it.source.sendRichMessage(CONFIG.get(ConfigRoute.MSG_CONFIG_RELOAD))
 
-            Command.SINGLE_SUCCESS
-        }
+                Command.SINGLE_SUCCESS
+            }
 }

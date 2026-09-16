@@ -13,6 +13,8 @@ import net.k1llm3sixy.proxyguard.ext.text
 import net.k1llm3sixy.proxyguard.io.ConfigRoute
 import net.k1llm3sixy.proxyguard.io.Storage.CONFIG
 import net.k1llm3sixy.proxyguard.services.DbService
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 
 object UsersCommand : BaseCommand<LiteralArgumentBuilder<CommandSource>>()
@@ -21,38 +23,56 @@ object UsersCommand : BaseCommand<LiteralArgumentBuilder<CommandSource>>()
         BrigadierCommand.literalArgumentBuilder("users")
             .requires { it.hasPerms("proxyguard.users") }
             .executes {
-            scope.launch {
-                val users = DbService.getUsers()
+                scope.launch {
+                    val users = DbService.getUsers()
 
-                if (users.isEmpty())
-                {
-                    it.source.sendRichMessage(CONFIG.get(ConfigRoute.MSG_USER_EMPTY))
-                    return@launch
-                }
+                    if (users.isEmpty())
+                    {
+                        it.source.sendRichMessage(CONFIG.get(ConfigRoute.MSG_USER_EMPTY))
+                        return@launch
+                    }
 
-                users.forEach { (uuid, nick, ip) ->
-                    val msg = miniMsg.deserialize(
-                        ConfigRoute.MSG_USERS,
-                        TagResolver.builder()
-                            .text(
-                                "nick",
-                                nick
-                            )
-                            .text(
-                                "ip",
-                                ip
-                            )
-                            .text(
-                                "uuid",
-                                uuid
-                            )
-                            .build()
+                    val title = miniMsg.deserialize(
+                        ConfigRoute.MSG_USERS_TITLE,
+                        Placeholder.component(
+                            "count",
+                            Component.text(users.size)
+                        )
                     )
 
-                    it.source.sendMessage(msg)
-                }
-            }
+                    it.source.sendMessage(title)
 
-            Command.SINGLE_SUCCESS
-        }
+                    users.forEach { (uuid, nick, ip, reason, time) ->
+                        val msg = miniMsg.deserialize(
+                            ConfigRoute.MSG_USERS,
+                            TagResolver.builder()
+                                .text(
+                                    "nick",
+                                    nick
+                                )
+                                .text(
+                                    "ip",
+                                    ip
+                                )
+                                .text(
+                                    "uuid",
+                                    uuid
+                                )
+                                .text(
+                                    "reason",
+                                    reason
+                                )
+                                .text(
+                                    "time",
+                                    time
+                                )
+                                .build()
+                        )
+
+                        it.source.sendMessage(msg)
+                    }
+                }
+
+                Command.SINGLE_SUCCESS
+            }
 }

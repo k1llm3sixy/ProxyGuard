@@ -24,11 +24,24 @@ msg-config-reload: "<green>ProxyGuard config successfully reloaded"
 # Sent when the user database is empty
 msg-users-empty: "<red>No users!"
 
-# User entry format for the list output
-msg-users: "<dark_gray>• <green><nick> <dark_gray>| <gray>IP: <yellow><ip> <dark_gray>| <gray>UUID: <white><uuid>"
+# Header for the banned users list command (/proxyguard users)
+# Available placeholders:
+# <count>
+msg-users-title: "<green>Banned users <dark_gray>(<yellow><count><dark_gray>)"
 
-# Sent when a user is unbanned (/proxyguard unban <uuid>)
-msg-unban-user: "<green>User <white><uuid> <green>unbanned"
+# User entry format for the list output
+# Available placeholders:
+# <nick>
+# <ip>
+# <uuid>
+# <reason>
+# <time>
+msg-users: "<dark_gray>• <white><nick> <dark_gray>| <gray>IP: <yellow><ip> <dark_gray>| <gray>UUID: <white><uuid> <dark_gray>| <gray>Reason: <red><reason> <dark_gray>| <gray>Time: <gold><time>"
+
+# Sent when a user is unbanned (/proxyguard unban ip|uuid|nick <ip|uuid|nick>)
+# Available placeholders:
+# <type>
+msg-unban: "<green><type> unbanned"
 
 # Kick message when proxy detected
 kick-proxy-msg: "Proxy detected!"
@@ -40,12 +53,18 @@ kick-vpn-msg: "VPN detected!"
 msg-invalid-ip: "<red>Invalid IP format!"
 
 # Sent when an IP is added to the whitelist (/proxyguard whitelist add <ip>)
+# Available placeholders:
+# <ip>
 msg-whitelist-add: "<green>IP <white><ip> <green>added to whitelist"
 
 # Sent when an IP is removed from the whitelist (/proxyguard whitelist remove <ip>)
+# Available placeholders:
+# <ip>
 msg-whitelist-remove: "<green>IP <white><ip> <green>removed from whitelist"
 
 # Entry format for the whitelist list output (/proxyguard whitelist list)
+# Available placeholders:
+# <ip>
 msg-whitelist-list: "<dark_gray>• <white>IP<dark_gray>: <yellow><ip>"
 
 # Sent when the whitelist is empty (/proxyguard whitelist list)

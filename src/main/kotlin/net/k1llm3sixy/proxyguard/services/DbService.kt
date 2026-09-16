@@ -11,11 +11,14 @@ import java.util.*
 private enum class Statement(val sql: String)
 {
     ADD_USER("INSERT OR REPLACE INTO bad_users (uuid, nick, ip, reason) VALUES (?, ?, ?, ?)"),
-    GET_USER("SELECT EXISTS(SELECT 1 FROM bad_users WHERE uuid = ?)"),
-    GET_USER_REASON("SELECT reason FROM bad_users WHERE uuid = ?"),
-    GET_USERS("SELECT uuid, nick, ip FROM bad_users"),
+    GET_USER("SELECT reason FROM bad_users WHERE uuid = ?"),
+    GET_USERS("SELECT uuid, nick, ip, reason, banned_at FROM bad_users"),
     GET_USERS_UUID("SELECT uuid FROM bad_users"),
-    DELETE_USER("DELETE FROM bad_users WHERE uuid = ?"),
+    GET_USERS_NICK("SELECT nick FROM bad_users"),
+    GET_USERS_IP("SELECT ip FROM bad_users"),
+    DELETE_USER_BY_UUID("DELETE FROM bad_users WHERE uuid = ?"),
+    DELETE_USER_BY_NICK("DELETE FROM bad_users WHERE nick = ?"),
+    DELETE_USER_BY_IP("DELETE FROM bad_users WHERE ip = ?"),
 
     ADD_WHITELIST("INSERT OR IGNORE INTO ip_whitelist (ip) VALUES (?)"),
     DELETE_WHITELIST("DELETE FROM ip_whitelist WHERE ip = ?"),
@@ -26,10 +29,19 @@ private enum class Statement(val sql: String)
     GET_VALID_USER("SELECT EXISTS(SELECT 1 FROM valid_users WHERE uuid = ?)"),
 }
 
+enum class Type
+{
+    UUID,
+    NICK,
+    IP
+}
+
 data class UserRecord(
     val uuid: String,
     val nick: String,
     val ip: String,
+    val reason: String,
+    val time: String,
 )
 
 object DbService
@@ -77,38 +89,43 @@ object DbService
         }
     }
 
-    fun removeUser(uuid: String): Boolean
+    fun removeUser(type: Type, data: String): Boolean
     {
-        conn.prepareStatement(Statement.DELETE_USER.sql).use {
-            it.setString(
-                1,
-                uuid
+        return when (type)
+        {
+            Type.UUID -> remove(
+                Statement.DELETE_USER_BY_UUID,
+                data
             )
 
+            Type.NICK -> remove(
+                Statement.DELETE_USER_BY_NICK,
+                data
+            )
+
+            Type.IP   -> remove(
+                Statement.DELETE_USER_BY_IP,
+                data
+            )
+        }
+    }
+
+    private fun remove(stmt: Statement, data: String): Boolean
+    {
+        conn.prepareStatement(stmt.sql).use {
+            it.setString(
+                1,
+                data
+            )
             val affected = it.executeUpdate()
 
             return affected > 0
         }
     }
 
-    fun getUser(uuid: UUID): Boolean
-    {
-        conn.prepareStatement(Statement.GET_USER.sql).use {
-            it.setString(
-                1,
-                uuid.toString()
-            )
-            it.executeQuery().use { rs ->
-                if (rs.next()) return rs.getBoolean(1)
-            }
-        }
-
-        return false
-    }
-
     fun getUserReason(uuid: UUID): Reason?
     {
-        conn.prepareStatement(Statement.GET_USER_REASON.sql).use {
+        conn.prepareStatement(Statement.GET_USER.sql).use {
             it.setString(
                 1,
                 uuid.toString()
@@ -136,10 +153,15 @@ object DbService
                     val uuid = rs.getString("uuid")
                     val nick = rs.getString("nick")
                     val ip = rs.getString("ip")
+                    val reason = rs.getString("reason")
+                    val time = rs.getString("banned_at")
+
                     val record = UserRecord(
                         uuid,
                         nick,
-                        ip
+                        ip,
+                        reason,
+                        time
                     )
                     users.add(record)
                 }
@@ -149,21 +171,26 @@ object DbService
         return users
     }
 
-    fun getUsersUuid(): List<String>
+    fun getUsersData(type: Type): List<String>
     {
-        val uuids = mutableListOf<String>()
+        val stmt = when (type)
+        {
+            Type.IP   -> Statement.GET_USERS_IP
+            Type.NICK -> Statement.GET_USERS_NICK
+            Type.UUID -> Statement.GET_USERS_UUID
+        }
+        val data = mutableListOf<String>()
 
-        conn.prepareStatement(Statement.GET_USERS_UUID.sql).use {
+        conn.prepareStatement(stmt.sql).use {
             it.executeQuery().use { rs ->
                 while (rs.next())
                 {
-                    val uuid = rs.getString("uuid")
-                    uuids.add(uuid)
+                    data.add(rs.getString(1))
                 }
             }
         }
 
-        return uuids
+        return data
     }
 
     fun addWhitelist(ip: String)
