@@ -7,7 +7,6 @@ enum class GuardError(val message: String)
 {
     CONFIG_INIT("Failed to initialize config"),
     CONFIG_RELOAD("Failed to reload config"),
-    DB_GET("Failed to get database file"),
     DB_INIT("Failed to initialize and connect database"),
     DB_QUERY("Failed to execute db query"),
     DS_SEND_WEBHOOK("Failed to send discord webhook"),
