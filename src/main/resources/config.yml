@@ -1,0 +1,63 @@
+file-version: 1
+
+# Available providers:
+# VPN_API - https://vpnapi.io/
+# PROXY_CHECK - https://proxycheck.io/
+provider: PROXY_CHECK
+
+# Available checks:
+# ALL - all checks
+# PROXY - only proxy
+# VPN - only vpn
+check: ALL
+
+# Uncomment and set your API key if using VPN_API provider
+#vpn-api-key:
+
+# Uncomment and set your API key if using PROXY_CHECK provider
+#proxycheck-api-key:
+
+# Plugin messages
+# Sent when config is reloaded (/proxyguard reload)
+msg-config-reload: "<green>ProxyGuard config successfully reloaded"
+
+# Sent when the user database is empty
+msg-users-empty: "<red>No users!"
+
+# User entry format for the list output
+msg-users: "<dark_gray>• <green><nick> <dark_gray>| <gray>IP: <yellow><ip> <dark_gray>| <gray>UUID: <white><uuid>"
+
+# Sent when a user is unbanned (/proxyguard unban <uuid>)
+msg-unban-user: "<green>User <white><uuid> <green>unbanned"
+
+# Kick message when proxy detected
+kick-proxy-msg: "Proxy detected!"
+
+# Kick message when vpn detected
+kick-vpn-msg: "VPN detected!"
+
+# Sent when passing an invalid IP to a whitelist command
+msg-invalid-ip: "<red>Invalid IP format!"
+
+# Sent when an IP is added to the whitelist (/proxyguard whitelist add <ip>)
+msg-whitelist-add: "<green>IP <white><ip> <green>added to whitelist"
+
+# Sent when an IP is removed from the whitelist (/proxyguard whitelist remove <ip>)
+msg-whitelist-remove: "<green>IP <white><ip> <green>removed from whitelist"
+
+# Entry format for the whitelist list output (/proxyguard whitelist list)
+msg-whitelist-list: "<dark_gray>• <white>IP<dark_gray>: <yellow><ip>"
+
+# Sent when the whitelist is empty (/proxyguard whitelist list)
+msg-whitelist-empty: "<dark_gray>• <red>There are no whitelisted IPs"
+
+# Discord notification settings
+discord:
+  # Enable or disable sending detection logs to Discord webhook
+  enabled: false
+  # Discord webhook URL
+  webhook: "https://discord.com/api/webhooks/..."
+  # Title displayed at the top of the Discord embed message
+  embed-title: "Player blocked"
+  # Explanation of the event shown in the embed body
+  embed-description: "A player was blocked while attempting to join the server with an active proxy or VPN"
