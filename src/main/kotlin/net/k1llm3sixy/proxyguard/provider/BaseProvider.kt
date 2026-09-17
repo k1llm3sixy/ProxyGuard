@@ -14,11 +14,11 @@ import java.net.http.HttpResponse
 import java.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
-enum class Reason
+enum class Detection
 {
     VPN,
     PROXY,
-    EMPTY,
+    CLEAN,
 }
 
 abstract class BaseProvider
@@ -42,16 +42,16 @@ abstract class BaseProvider
     {
         Check.ALL   -> when
         {
-            vpn   -> Reason.VPN
-            proxy -> Reason.PROXY
-            else  -> Reason.EMPTY
+            vpn   -> Detection.VPN
+            proxy -> Detection.PROXY
+            else  -> Detection.CLEAN
         }
 
-        Check.VPN   -> if (vpn) Reason.VPN else Reason.EMPTY
-        Check.PROXY -> if (proxy) Reason.PROXY else Reason.EMPTY
+        Check.VPN   -> if (vpn) Detection.VPN else Detection.CLEAN
+        Check.PROXY -> if (proxy) Detection.PROXY else Detection.CLEAN
     }
 
-    protected suspend fun getResult(uri: String, block: (HttpResponse<String>) -> Reason): Reason
+    protected suspend fun getResult(uri: String, block: (HttpResponse<String>) -> Detection): Detection
     {
         return withTimeout(5.seconds) {
             runCatching {
@@ -64,8 +64,8 @@ abstract class BaseProvider
                 {
                     block(response)
                 }
-                else Reason.EMPTY
-            }.getOrDefault(Reason.EMPTY)
+                else Detection.CLEAN
+            }.getOrDefault(Detection.CLEAN)
         }
     }
 
@@ -84,5 +84,5 @@ abstract class BaseProvider
             .GET()
             .build()
 
-    abstract suspend fun proxy(ip: String): Reason
+    abstract suspend fun classify(ip: String): Detection
 }

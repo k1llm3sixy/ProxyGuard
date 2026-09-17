@@ -42,7 +42,7 @@ object UsersCommand : BaseCommand<LiteralArgumentBuilder<CommandSource>>()
 
                     it.source.sendMessage(title)
 
-                    users.forEach { (uuid, nick, ip, reason, time) ->
+                    users.forEach { (uuid, nick, ip, detection, time) ->
                         val msg = miniMsg.deserialize(
                             ConfigRoute.MSG_USERS,
                             TagResolver.builder()
@@ -59,8 +59,8 @@ object UsersCommand : BaseCommand<LiteralArgumentBuilder<CommandSource>>()
                                     uuid
                                 )
                                 .text(
-                                    "reason",
-                                    reason
+                                    "detection",
+                                    detection
                                 )
                                 .text(
                                     "time",

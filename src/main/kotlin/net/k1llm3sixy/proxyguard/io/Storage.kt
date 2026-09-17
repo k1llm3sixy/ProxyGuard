@@ -11,7 +11,7 @@ import net.k1llm3sixy.proxyguard.ProxyGuard
 import net.k1llm3sixy.proxyguard.error.GuardError
 import net.k1llm3sixy.proxyguard.error.safeCall
 import net.k1llm3sixy.proxyguard.ext.get
-import net.k1llm3sixy.proxyguard.provider.Reason
+import net.k1llm3sixy.proxyguard.provider.Detection
 
 import java.io.File
 import java.nio.file.Path
@@ -26,6 +26,7 @@ enum class ConfigRoute(val route: Route)
     MSG_USERS_TITLE(Route.from("msg-users-title")),
     MSG_USERS(Route.from("msg-users")),
     MSG_UNBAN(Route.from("msg-unban")),
+    MSG_CHECK_IP(Route.from("msg-check-ip")),
 
     KICK_PROXY_MSG(Route.from("kick-proxy-msg")),
     KICK_VPN_MSG(Route.from("kick-vpn-msg")),
@@ -41,6 +42,13 @@ enum class ConfigRoute(val route: Route)
     DS_WEBHOOK(Route.from("discord").add("webhook")),
     DS_EMBED_TITLE(Route.from("discord").add("embed-title")),
     DS_EMBED_DESC(Route.from("discord").add("embed-description")),
+
+    DS_EMBED_FIELD_PLAYER(Route.from("discord").add("embed-field-player")),
+    DS_EMBED_FIELD_DETECTION(Route.from("discord").add("embed-field-detection")),
+    DS_EMBED_FIELD_IP(Route.from("discord").add("embed-field-ip")),
+    DS_EMBED_FIELD_PLAYER_VALUE(Route.from("discord").add("embed-field-player-value")),
+    DS_EMBED_FIELD_DETECTION_VALUE(Route.from("discord").add("embed-field-detection-value")),
+    DS_EMBED_FIELD_IP_VALUE(Route.from("discord").add("embed-field-ip-value")),
 }
 
 enum class Check
@@ -76,11 +84,11 @@ object Storage
         Check::class.java
     )
 
-    fun getKickMsg(reason: Reason): String = when (reason)
+    fun getKickMsg(detection: Detection): String = when (detection)
     {
-        Reason.PROXY -> CONFIG.get(ConfigRoute.KICK_PROXY_MSG)
-        Reason.VPN   -> CONFIG.get(ConfigRoute.KICK_VPN_MSG)
-        Reason.EMPTY -> ""
+        Detection.PROXY -> CONFIG.get(ConfigRoute.KICK_PROXY_MSG)
+        Detection.VPN   -> CONFIG.get(ConfigRoute.KICK_VPN_MSG)
+        Detection.CLEAN -> ""
     }
 
     fun reload()

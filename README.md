@@ -16,6 +16,7 @@
 |-------------------------------------|---------------------------------|
 | `/proxyguard reload`                | Reload config                   |
 | `/proxyguard users`                 | List all blocked players        |
+| `/proxyguard check <ip>`            | Check an IP for proxy/VPN usage |
 | `/proxyguard unban <uuid>`          | Unban a player by UUID          |
 | `/proxyguard whitelist add <ip>`    | Add an IP to the whitelist      |
 | `/proxyguard whitelist remove <ip>` | Remove an IP from the whitelist |
@@ -30,6 +31,7 @@
 | `proxyguard.admin`     | All commands                  |
 | `proxyguard.reload`    | `/proxyguard reload`          |
 | `proxyguard.users`     | `/proxyguard users`           |
+| `proxyguard.check`     | `/proxyguard check <ip>`      |
 | `proxyguard.unban`     | `/proxyguard unban <uuid>`    |
 | `proxyguard.whitelist` | `/proxyguard whitelist <...>` |
 

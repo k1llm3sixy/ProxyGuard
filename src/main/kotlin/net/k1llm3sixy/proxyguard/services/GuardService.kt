@@ -2,12 +2,12 @@ package net.k1llm3sixy.proxyguard.services
 
 import net.k1llm3sixy.proxyguard.ProxyGuard.Companion.LOGGER
 import net.k1llm3sixy.proxyguard.provider.BaseProvider
-import net.k1llm3sixy.proxyguard.provider.Reason
+import net.k1llm3sixy.proxyguard.provider.Detection
 import java.util.*
 
 object GuardService
 {
-    suspend fun block(ip: String, uuid: UUID, nick: String): Reason
+    suspend fun detect(ip: String, uuid: UUID, nick: String): Detection
     {
         val local = ip == "127.0.0.1" || ip == "localhost"
         val bypass = DbService.getWhitelist(ip) || DbService.getValidUser(uuid)
@@ -18,44 +18,44 @@ object GuardService
                 nick,
                 ip
             )
-            return Reason.EMPTY
+            return Detection.CLEAN
         }
 
-        val userReason = DbService.getUserReason(uuid)
+        val userDetection = DbService.getUserDetection(uuid)
 
-        if (userReason != Reason.EMPTY)
+        if (userDetection != Detection.CLEAN)
         {
             LOGGER.debug(
                 "Rejected {} ({}) {} - already in bad_users",
                 nick,
                 ip,
-                userReason
+                userDetection
             )
-            return userReason
+            return userDetection
         }
-        val reason = BaseProvider.provider().proxy(ip)
+        val detection = BaseProvider.provider().classify(ip)
 
-        if (reason != Reason.EMPTY)
+        if (detection != Detection.CLEAN)
         {
             DbService.addUser(
                 uuid,
                 nick,
                 ip,
-                reason
+                detection
             )
             DiscordService.sendWebhook(
                 nick,
                 ip,
-                reason.name
+                detection.name
             )
 
             LOGGER.info(
                 "Blocked {} ({}) - {}",
                 nick,
                 ip,
-                reason
+                detection
             )
-            return reason
+            return detection
         }
 
         DbService.addValidUser(
@@ -69,6 +69,13 @@ object GuardService
             nick,
             ip
         )
-        return Reason.EMPTY
+        return Detection.CLEAN
+    }
+
+    suspend fun checkIp(ip: String): Detection
+    {
+        val detection = BaseProvider.provider().classify(ip)
+
+        return detection
     }
 }

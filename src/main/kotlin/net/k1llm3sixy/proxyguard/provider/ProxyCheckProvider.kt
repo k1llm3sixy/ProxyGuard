@@ -19,7 +19,7 @@ class ProxyCheckProvider : BaseProvider()
     override val key: String
         get() = CONFIG.get(ConfigRoute.PROXYCHECK_API_KEY)
 
-    override suspend fun proxy(ip: String): Reason
+    override suspend fun classify(ip: String): Detection
     {
         val uri = provider.url.format(
             ip,
@@ -30,7 +30,7 @@ class ProxyCheckProvider : BaseProvider()
             val data = gson.fromJson(
                 it.body(),
                 Response::class.java
-            )?.detections ?: return@getResult Reason.EMPTY
+            )?.detections ?: return@getResult Detection.CLEAN
 
             check(
                 data.vpn,

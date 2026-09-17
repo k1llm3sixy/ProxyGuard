@@ -8,7 +8,7 @@ import net.k1llm3sixy.proxyguard.ProxyGuard.Companion.scope
 import net.k1llm3sixy.proxyguard.error.GuardError
 import net.k1llm3sixy.proxyguard.error.safeCall
 import net.k1llm3sixy.proxyguard.io.Storage
-import net.k1llm3sixy.proxyguard.provider.Reason
+import net.k1llm3sixy.proxyguard.provider.Detection
 import net.k1llm3sixy.proxyguard.services.GuardService
 import net.kyori.adventure.text.Component
 
@@ -23,16 +23,16 @@ class PreLoginListener
                 val uuid = event.uniqueId!!
                 val nick = event.username
 
-                val reason = GuardService.block(
+                val detection = GuardService.detect(
                     ip,
                     uuid,
                     nick
                 )
 
-                if (reason != Reason.EMPTY)
+                if (detection != Detection.CLEAN)
                 {
                     event.result = PreLoginEvent.PreLoginComponentResult.denied(
-                        Component.text(Storage.getKickMsg(reason))
+                        Component.text(Storage.getKickMsg(detection))
                     )
                 }
 

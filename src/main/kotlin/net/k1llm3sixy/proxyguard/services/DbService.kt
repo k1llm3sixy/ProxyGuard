@@ -3,16 +3,16 @@ package net.k1llm3sixy.proxyguard.services
 import net.k1llm3sixy.proxyguard.error.GuardError
 import net.k1llm3sixy.proxyguard.error.safeCall
 import net.k1llm3sixy.proxyguard.io.Storage
-import net.k1llm3sixy.proxyguard.provider.Reason
+import net.k1llm3sixy.proxyguard.provider.Detection
 import java.sql.Connection
 import java.sql.DriverManager
 import java.util.*
 
 private enum class Statement(val sql: String)
 {
-    ADD_USER("INSERT OR REPLACE INTO bad_users (uuid, nick, ip, reason) VALUES (?, ?, ?, ?)"),
-    GET_USER("SELECT reason FROM bad_users WHERE uuid = ?"),
-    GET_USERS("SELECT uuid, nick, ip, reason, banned_at FROM bad_users"),
+    ADD_USER("INSERT OR REPLACE INTO bad_users (uuid, nick, ip, detection) VALUES (?, ?, ?, ?)"),
+    GET_USER("SELECT detection FROM bad_users WHERE uuid = ?"),
+    GET_USERS("SELECT uuid, nick, ip, detection, banned_at FROM bad_users"),
     GET_USERS_UUID("SELECT uuid FROM bad_users"),
     GET_USERS_NICK("SELECT nick FROM bad_users"),
     GET_USERS_IP("SELECT ip FROM bad_users"),
@@ -40,7 +40,7 @@ data class UserRecord(
     val uuid: String,
     val nick: String,
     val ip: String,
-    val reason: String,
+    val detection: String,
     val time: String,
 )
 
@@ -63,7 +63,7 @@ object DbService
         runMigrations()
     }
 
-    fun addUser(uuid: UUID, nick: String, ip: String, reason: Reason)
+    fun addUser(uuid: UUID, nick: String, ip: String, detection: Detection)
     {
         safeCall(GuardError.DB_QUERY) {
             conn.prepareStatement(Statement.ADD_USER.sql).use {
@@ -81,7 +81,7 @@ object DbService
                 )
                 it.setString(
                     4,
-                    reason.name
+                    detection.name
                 )
 
                 it.executeUpdate()
@@ -119,7 +119,7 @@ object DbService
         }
     }
 
-    fun getUserReason(uuid: UUID): Reason
+    fun getUserDetection(uuid: UUID): Detection
     {
         return safeCall(GuardError.DB_QUERY) {
             conn.prepareStatement(Statement.GET_USER.sql).use {
@@ -130,12 +130,12 @@ object DbService
                 it.executeQuery().use { rs ->
                     if (rs.next())
                     {
-                        Reason.valueOf(rs.getString(1))
+                        Detection.valueOf(rs.getString(1))
                     }
-                    else Reason.EMPTY
+                    else Detection.CLEAN
                 }
             }
-        }.getOrDefault(Reason.EMPTY)
+        }.getOrDefault(Detection.CLEAN)
     }
 
     fun getUsers(): List<UserRecord>
@@ -150,14 +150,14 @@ object DbService
                         val uuid = rs.getString("uuid")
                         val nick = rs.getString("nick")
                         val ip = rs.getString("ip")
-                        val reason = rs.getString("reason")
+                        val detection = rs.getString("detection")
                         val time = rs.getString("banned_at")
 
                         val record = UserRecord(
                             uuid,
                             nick,
                             ip,
-                            reason,
+                            detection,
                             time
                         )
                         users.add(record)
@@ -302,7 +302,7 @@ object DbService
                 uuid TEXT PRIMARY KEY,
                 nick TEXT NOT NULL,
                 ip TEXT NOT NULL,
-                reason TEXT NOT NULL,
+                detection TEXT NOT NULL,
                 banned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
                 """.trimIndent()

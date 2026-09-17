@@ -43,11 +43,21 @@ private data class Footer(
 
 object DiscordService
 {
-    private val client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build()
+    private val client = HttpClient.newBuilder()
+        .connectTimeout(Duration.ofSeconds(5))
+        .build()
 
-    fun sendWebhook(nick: String, ip: String, reason: String)
+    fun sendWebhook(nick: String, ip: String, detection: String)
     {
         if (!CONFIG.getB(ConfigRoute.DS_ENABLED)) return
+
+        val playerField = CONFIG.get(ConfigRoute.DS_EMBED_FIELD_PLAYER)
+        val detectionField = CONFIG.get(ConfigRoute.DS_EMBED_FIELD_DETECTION)
+        val ipField = CONFIG.get(ConfigRoute.DS_EMBED_FIELD_IP)
+
+        val playerV = CONFIG.get(ConfigRoute.DS_EMBED_FIELD_PLAYER_VALUE)
+        val detectionV = CONFIG.get(ConfigRoute.DS_EMBED_FIELD_DETECTION_VALUE)
+        val ipV = CONFIG.get(ConfigRoute.DS_EMBED_FIELD_IP_VALUE)
 
         val title = CONFIG.get(ConfigRoute.DS_EMBED_TITLE)
         val description = CONFIG.get(ConfigRoute.DS_EMBED_DESC)
@@ -62,18 +72,27 @@ object DiscordService
                     15158332,
                     listOf(
                         Field(
-                            "Player",
-                            "`$nick`",
+                            playerField,
+                            playerV.replace(
+                                "{nick}",
+                                nick
+                            ),
                             true
                         ),
                         Field(
-                            "Reason",
-                            "`$reason`",
+                            detectionField,
+                            detectionV.replace(
+                                "{detection}",
+                                detection
+                            ),
                             true
                         ),
                         Field(
-                            "IP",
-                            "||`$ip`||",
+                            ipField,
+                            ipV.replace(
+                                "{ip}",
+                                ip
+                            ),
                             false
                         )
                     ),
@@ -87,10 +106,14 @@ object DiscordService
         )
 
         safeCall(GuardError.DS_SEND_WEBHOOK) {
-            val request = HttpRequest.newBuilder().uri(uri).setHeader(
-                "Content-Type",
-                "application/json"
-            ).POST(HttpRequest.BodyPublishers.ofString(Gson().toJson(payload))).build()
+            val request = HttpRequest.newBuilder()
+                .uri(uri)
+                .setHeader(
+                    "Content-Type",
+                    "application/json"
+                )
+                .POST(HttpRequest.BodyPublishers.ofString(Gson().toJson(payload)))
+                .build()
 
             val response = client.send(
                 request,

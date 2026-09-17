@@ -21,9 +21,6 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 
 object WhitelistCommand : BaseCommand<LiteralArgumentBuilder<CommandSource>>()
 {
-    private val ipRegex =
-        Regex("^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$")
-
     override fun create() = BrigadierCommand.literalArgumentBuilder("whitelist")
         .requires { it.hasPerms("proxyguard.whitelist") }
         .then(

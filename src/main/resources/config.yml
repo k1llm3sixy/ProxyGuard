@@ -6,7 +6,7 @@ file-version: 1
 provider: PROXY_CHECK
 
 # Available checks:
-# ALL - all checks
+# ALL - proxy and vpn checks
 # PROXY - only proxy
 # VPN - only vpn
 check: ALL
@@ -25,21 +25,21 @@ msg-config-reload: "<green>ProxyGuard config successfully reloaded"
 msg-users-empty: "<red>No users!"
 
 # Header for the banned users list command (/proxyguard users)
-# Available placeholders:
+# Placeholders:
 # <count>
 msg-users-title: "<green>Banned users <dark_gray>(<yellow><count><dark_gray>)"
 
 # User entry format for the list output
-# Available placeholders:
+# Placeholders:
 # <nick>
 # <ip>
 # <uuid>
-# <reason>
+# <detection>
 # <time>
-msg-users: "<dark_gray>• <white><nick> <dark_gray>| <gray>IP: <yellow><ip> <dark_gray>| <gray>UUID: <white><uuid> <dark_gray>| <gray>Reason: <red><reason> <dark_gray>| <gray>Time: <gold><time>"
+msg-users: "<dark_gray>• <white><nick> <dark_gray>| <gray>IP: <yellow><ip> <dark_gray>| <gray>UUID: <white><uuid> <dark_gray>| <gray>Detection: <red><detection> <dark_gray>| <gray>Time: <gold><time>"
 
 # Sent when a user is unbanned (/proxyguard unban ip|uuid|nick <ip|uuid|nick>)
-# Available placeholders:
+# Placeholders:
 # <type>
 msg-unban: "<green><type> unbanned"
 
@@ -53,22 +53,28 @@ kick-vpn-msg: "VPN detected!"
 msg-invalid-ip: "<red>Invalid IP format!"
 
 # Sent when an IP is added to the whitelist (/proxyguard whitelist add <ip>)
-# Available placeholders:
+# Placeholders:
 # <ip>
 msg-whitelist-add: "<green>IP <white><ip> <green>added to whitelist"
 
 # Sent when an IP is removed from the whitelist (/proxyguard whitelist remove <ip>)
-# Available placeholders:
+# Placeholders:
 # <ip>
 msg-whitelist-remove: "<green>IP <white><ip> <green>removed from whitelist"
 
 # Entry format for the whitelist list output (/proxyguard whitelist list)
-# Available placeholders:
+# Placeholders:
 # <ip>
 msg-whitelist-list: "<dark_gray>• <white>IP<dark_gray>: <yellow><ip>"
 
 # Sent when the whitelist is empty (/proxyguard whitelist list)
 msg-whitelist-empty: "<dark_gray>• <red>There are no whitelisted IPs"
+
+# Sent when manually check IP (/proxyguard check <ip>)
+# Placeholders:
+# <ip>
+# <detection>
+msg-check-ip: "<green>IP <white><ip> <green>detection: <gray><detection>"
 
 # Discord notification settings
 discord:
@@ -76,6 +82,27 @@ discord:
   enabled: false
   # Discord webhook URL
   webhook: "https://discord.com/api/webhooks/..."
+
+  # Name of the embed field displaying the player's nickname
+  embed-field-player: "Player:"
+  # Name of the embed field displaying the detection (PROXY or VPN)
+  embed-field-detection: "Detection:"
+  # Name of the embed field displaying the blocked IP address
+  embed-field-ip: "IP:"
+  
+  # Value format for the player field
+  # Placeholders:
+  # {nick}
+  embed-field-player-value: "```{nick}```"
+  # Value format for the detection field
+  # Placeholders:
+  # {detection}
+  embed-field-detection-value: "```{detection}```"
+  # Value format for the IP field
+  # Placeholders:
+  # {ip}
+  embed-field-ip-value: "||**{ip}**||"
+
   # Title displayed at the top of the Discord embed message
   embed-title: "Player blocked"
   # Explanation of the event shown in the embed body
