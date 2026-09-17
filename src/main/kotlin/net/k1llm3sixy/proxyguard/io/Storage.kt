@@ -49,6 +49,8 @@ enum class ConfigRoute(val route: Route)
     DS_EMBED_FIELD_PLAYER_VALUE(Route.from("discord").add("embed-field-player-value")),
     DS_EMBED_FIELD_DETECTION_VALUE(Route.from("discord").add("embed-field-detection-value")),
     DS_EMBED_FIELD_IP_VALUE(Route.from("discord").add("embed-field-ip-value")),
+
+    MSG_STATS(Route.from("msg-stats"))
 }
 
 enum class Check

@@ -76,6 +76,14 @@ msg-whitelist-empty: "<dark_gray>• <red>There are no whitelisted IPs"
 # <detection>
 msg-check-ip: "<green>IP <white><ip> <green>detection: <gray><detection>"
 
+# Sent when checking stats (/proxyguard stats)
+# Placeholders:
+# <vpn>
+# <proxy>
+# <whitelist>
+# <valid>
+msg-stats: "<gray>VPN: <red><vpn> <dark_gray>| <gray>Proxy: <red><proxy> <dark_gray>| <gray>Whitelist: <yellow><whitelist> <dark_gray>| <gray>Valid: <green><valid>"
+
 # Discord notification settings
 discord:
   # Enable or disable sending detection logs to Discord webhook

@@ -12,28 +12,18 @@
 
 ## Commands
 
-| Command                             | Description                     |
-|-------------------------------------|---------------------------------|
-| `/proxyguard reload`                | Reload config                   |
-| `/proxyguard users`                 | List all blocked players        |
-| `/proxyguard check <ip>`            | Check an IP for proxy/VPN usage |
-| `/proxyguard unban <uuid>`          | Unban a player by UUID          |
-| `/proxyguard whitelist add <ip>`    | Add an IP to the whitelist      |
-| `/proxyguard whitelist remove <ip>` | Remove an IP from the whitelist |
-| `/proxyguard whitelist list`        | List all whitelisted IPs        |
-
-## Permissions
-
 `proxyguard.admin` grants access to all commands. Alternatively, each command can be granted individually:
 
-| Permission             | Command                       |
-|------------------------|-------------------------------|
-| `proxyguard.admin`     | All commands                  |
-| `proxyguard.reload`    | `/proxyguard reload`          |
-| `proxyguard.users`     | `/proxyguard users`           |
-| `proxyguard.check`     | `/proxyguard check <ip>`      |
-| `proxyguard.unban`     | `/proxyguard unban <uuid>`    |
-| `proxyguard.whitelist` | `/proxyguard whitelist <...>` |
+| Command                             | Description                     | Permission              |
+|-------------------------------------|---------------------------------|-------------------------|
+| `/proxyguard reload`                | Reload config                   | `proxyguard.reload`     |
+| `/proxyguard users`                 | List all blocked players        | `proxyguard.users`      |
+| `/proxyguard check <ip>`            | Check an IP for proxy/VPN usage | `proxyguard.check`      |
+| `/proxyguard stats`                 | Show stats                      | `proxyguard.stats`      |
+| `/proxyguard unban <uuid>`          | Unban a player by UUID          | `proxyguard.unban`      |
+| `/proxyguard whitelist add <ip>`    | Add an IP to the whitelist      | `proxyguard.whitelist`  |
+| `/proxyguard whitelist remove <ip>` | Remove an IP from the whitelist | `proxyguard.whitelist`  |
+| `/proxyguard whitelist list`        | List all whitelisted IPs        | `proxyguard.whitelist`  |
 
 ## IP providers
 
@@ -50,9 +40,9 @@ When a player is blocked, if `discord.enabled` is enabled in the config, an embe
 the following fields:
 
 - **Player** - nickname of the blocked player
-- **Reason** - block reason
+- **Detection** - detected connection type (PROXY or VPN)
 - **IP** - IP address
 
-> The embed title, description, and reason can be customized via the config
+> The embed title, description, field names, and values can be customized via the config
 
 > All text messages support only [MiniMessage](https://docs.papermc.io/adventure/minimessage/format/) format

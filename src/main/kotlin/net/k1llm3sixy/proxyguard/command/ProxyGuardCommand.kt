@@ -11,6 +11,7 @@ object ProxyGuardCommand : BaseCommand<BrigadierCommand>()
             .then(UnbanCommand.create())
             .then(WhitelistCommand.create())
             .then(CheckCommand.create())
+            .then(StatsCommand.create())
             .build()
     )
 }
